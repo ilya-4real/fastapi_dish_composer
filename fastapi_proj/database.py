@@ -1,4 +1,7 @@
+from beanie import Document 
+
 from abc import ABC, abstractmethod
+
 
 class AbstractRepository(ABC):
     @abstractmethod
@@ -12,8 +15,5 @@ class AbstractRepository(ABC):
         raise NotImplementedError
     
 
-class BeanieRepository(AbstractRepository):
-    model = None
-
-    async def get_one():
-        ...
+class BeanieRepository():
+    model: Document = None
