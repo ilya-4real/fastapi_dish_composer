@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "fastapi-proj"
+version = "0.1.0"
+description = ""
+authors = ["ilya-4real <ilya.chernishyov@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.108.0"
+uvicorn = "^0.25.0"
+pytest = "^7.4.4"
+beanie = "^1.24.0"
+motor = "^3.3.2"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
