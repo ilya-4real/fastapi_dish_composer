@@ -1,12 +1,7 @@
 from typing import Annotated
 from pydantic import BaseModel
 from beanie import Document, Indexed
-import pymongo
-
-
-class Ingredient(BaseModel):
-    title: Annotated[str, Indexed(str, unique=True)]
-    category: str
+from fastapi_proj.recipies.schemas import Ingredient
 
 
 class Recipe(Document):

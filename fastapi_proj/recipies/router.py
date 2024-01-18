@@ -1,6 +1,8 @@
 from fastapi.routing import APIRouter
-from fastapi_proj.recipies.models import Recipe
+from fastapi_proj.recipies.schemas import RecipeDTO
 from fastapi_proj.recipies.repo import RecipeRepository
+from fastapi_proj.logger_setup import logger
+from fastapi_proj.recipies.models import Recipe
 
 
 RecipeRouter = APIRouter(prefix='/recipe')
@@ -12,7 +14,7 @@ async def get_recipe(id: str):
 
 
 @RecipeRouter.post('/add_recipe', tags=['recipes'])
-async def add_recipe(recipe: Recipe):
+async def add_recipe(recipe: RecipeDTO):
     repo = RecipeRepository()
     await repo.add_recipe(recipe)
     # print(recipe.model_dump())
