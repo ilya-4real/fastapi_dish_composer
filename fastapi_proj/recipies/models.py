@@ -9,4 +9,3 @@ class Recipe(Document):
     category: str
     description: str
     ingredients: list[Ingredient]
-    

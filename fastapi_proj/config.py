@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-LOGGING_LEVEL = 'INFO'
+LOGGING_LEVEL = "INFO"
 MONGO_USER = os.environ.get("MONGO_USER")
 MONGO_PASSWORD = os.environ.get("MONGO_PASSWORD")
 MONGO_HOST = os.environ.get("MONGO_HOST")
