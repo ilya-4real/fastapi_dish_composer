@@ -2,7 +2,7 @@ import logging
 import sys
 from fastapi_proj.config import LOGGING_LEVEL
 
-logger = logging.getLogger(__package__)
+logger = logging.getLogger(__name__)
 logger.setLevel(LOGGING_LEVEL)
 
 handler = logging.StreamHandler(stream=sys.stdout)

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi_proj import RecipeRouter
+from fastapi_proj import RecipeRouter, AuthRouter
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 
@@ -22,3 +22,4 @@ app = FastAPI(lifespan=lifespan)
 
 
 app.include_router(RecipeRouter)
+app.include_router(AuthRouter)
