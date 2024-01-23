@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi_proj.auth.models import User
-from fastapi_proj.auth.utils import encrypt_password
+from fastapi_proj.auth.utils import encrypt_password, verify_password
 from pymongo.errors import DuplicateKeyError
 
 
@@ -17,5 +17,12 @@ class UserSerivce:
                 status.HTTP_409_CONFLICT, detail="username should be unique"
             )
 
-    async def authenticate_user(self, username: str, password):
-        ...
+    async def authenticate_user(self, username: str, password: str):
+        user = await self.document.find({"username": username}).first_or_none()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="user is not authenticated",
+            )
+        else:
+            return verify_password(password, user.hashed_password)

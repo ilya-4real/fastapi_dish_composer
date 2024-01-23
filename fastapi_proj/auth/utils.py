@@ -7,25 +7,26 @@ crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def generate_jwt(username: str, id: str, exp_in_seconds: int):
+    if exp_in_seconds <= 0:
+        return None
     payload = {"username": username, "id": id}
     exp_time = datetime.datetime.now(datetime.UTC) + datetime.timedelta(
         seconds=exp_in_seconds
     )
-    payload["exp"] = exp_time  # type: ignore
+    payload["exp"] = exp_time  # type: ignore type
     return jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
 
 
-def check_jwt(token: str):
-    payload = jwt.decode(
-        token,
-        JWT_SECRET,
-        algorithms=[JWT_ALGORITHM],
-    )
-    username = payload.get("username")
-    id = payload.get("id")
-    if username is None or id is None:
+def check_jwt(token: str) -> dict[str, str | int] | None:
+    try:
+        payload = jwt.decode(
+            token,
+            JWT_SECRET,
+            algorithms=[JWT_ALGORITHM],
+        )
+    except jwt.exceptions.PyJWTError:
         return None
-    return
+    return payload
 
 
 def encrypt_password(password: str):

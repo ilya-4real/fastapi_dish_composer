@@ -17,6 +17,8 @@ pyjwt = {extras = ["crypto"], version = "^2.8.0"}
 gunicorn = "^21.2.0"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 pydantic = {extras = ["email"], version = "^2.5.3"}
+python-multipart = "^0.0.6"
+bcrypt = "4.0.1"
 
 
 [build-system]

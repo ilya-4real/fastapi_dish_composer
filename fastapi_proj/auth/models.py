@@ -1,13 +1,13 @@
 from typing import Annotated
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from beanie import Document, Indexed
 
 
-class UserModel(BaseModel):
+class UserDTO(BaseModel):
     username: Annotated[str, Indexed(unique=True)]
-    hashed_password: str
     email: EmailStr | None = None
 
 
-class User(Document, UserModel):
-    pass
+class User(Document, UserDTO):
+    disabled: bool = Field(default=False)
+    hashed_password: str
