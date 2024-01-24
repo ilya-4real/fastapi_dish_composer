@@ -1,4 +1,4 @@
-import jwt
+from jose import jwt, JWTError
 import datetime
 from fastapi_proj.config import JWT_SECRET, JWT_ALGORITHM
 from passlib.context import CryptContext
@@ -17,15 +17,15 @@ def generate_jwt(username: str, id: str, exp_in_seconds: int):
     return jwt.encode(payload, JWT_SECRET, JWT_ALGORITHM)
 
 
-def check_jwt(token: str) -> dict[str, str | int] | None:
-    try:
-        payload = jwt.decode(
-            token,
-            JWT_SECRET,
-            algorithms=[JWT_ALGORITHM],
-        )
-    except jwt.exceptions.PyJWTError:
-        return None
+def decode_jwt(token: str) -> dict[str, str | int] | None:
+    # try:
+    payload = jwt.decode(
+        token,
+        JWT_SECRET,
+        algorithms=[JWT_ALGORITHM],
+    )
+    # except JWTError:
+    #     return None
     return payload
 
 

@@ -7,10 +7,10 @@ class UserRequest(BaseModel):
 
 
 class Token(BaseModel):
-    token: str
+    access_token: str
     token_type: str
 
 
-class TokenData(BaseModel):
-    username: str
-    scopes: list[str] = []
+# class TokenData(BaseModel):
+#     username: str
+#     scopes: list[str] = []

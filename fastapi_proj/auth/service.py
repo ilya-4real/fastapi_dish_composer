@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from fastapi_proj.auth.models import User
-from fastapi_proj.auth.utils import encrypt_password, verify_password
+from fastapi_proj.auth.utils import encrypt_password, verify_password, generate_jwt
 from pymongo.errors import DuplicateKeyError
 
 
@@ -24,5 +24,5 @@ class UserSerivce:
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="user is not authenticated",
             )
-        else:
-            return verify_password(password, user.hashed_password)
+        if verify_password(password, user.hashed_password):
+            return generate_jwt(user.username, "13242afd2", 7 * 60)

@@ -1,21 +1,25 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from fastapi_proj.auth.schemas import UserRequest
+from fastapi_proj.auth.schemas import UserRequest, Token
 from fastapi_proj.auth.service import UserSerivce
-from fastapi_proj.auth.config import ouath2_bearer
+
+
+ouath2_bearer = OAuth2PasswordBearer(tokenUrl="account/token")
 
 
 router = APIRouter(prefix="/account", tags=["/account"])
 
 
-@router.post("/login")
+@router.post("/token", response_model=Token)
 async def account_login(
-    service: Annotated[UserSerivce, Depends(UserSerivce)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
-    user = await service.authenticate_user(form_data.username, form_data.password)
-    return user
+    token = await UserSerivce().authenticate_user(
+        form_data.username, form_data.password
+    )
+    if token:
+        return {"access_token": token, "token_type": "Bearer"}
 
 
 @router.post("/register")
@@ -27,5 +31,5 @@ async def register_account(
 
 
 @router.get("/me")
-async def get_account(token: Annotated[OAuth2PasswordBearer, Depends(ouath2_bearer)]):
+async def get_account(token: Annotated[str, Depends(ouath2_bearer)]):
     print(token)
