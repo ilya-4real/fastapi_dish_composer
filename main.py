@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.security import OAuth2PasswordBearer
 from fastapi_proj import RecipeRouter, AuthRouter
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie

@@ -4,10 +4,13 @@ from beanie import Document, Indexed
 
 
 class UserDTO(BaseModel):
-    username: Annotated[str, Indexed(unique=True)]
-    email: EmailStr | None = None
+    username: str
+    email: Annotated[EmailStr, Indexed(unique=True)]
 
 
 class User(Document, UserDTO):
     disabled: bool = Field(default=False)
     hashed_password: str
+
+    def __repr__(self) -> str:
+        return f"{self.username}"

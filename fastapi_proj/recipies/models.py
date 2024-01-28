@@ -1,11 +1,19 @@
 from typing import Annotated
 from pydantic import BaseModel
 from beanie import Document, Indexed
-from fastapi_proj.recipies.schemas import Ingredient
 
 
-class Recipe(Document):
-    title: Annotated[str, Indexed(str, unique=True)]
+class Ingredient(BaseModel):
+    title: str
     category: str
-    description: str
-    ingredients: list[Ingredient]
+
+
+class RecipeDTO(BaseModel):
+    title: Annotated[str, Indexed(str, unique=True)]
+    category: str | None = None
+    description: str | None = None
+    ingredients: list[Ingredient] | None = None
+
+
+class Recipe(Document, RecipeDTO):
+    pass

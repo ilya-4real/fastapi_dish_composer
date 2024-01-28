@@ -1,9 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class UserRequest(BaseModel):
     username: str
     password: str
+    email: EmailStr
 
 
 class Token(BaseModel):
@@ -11,6 +12,6 @@ class Token(BaseModel):
     token_type: str
 
 
-# class TokenData(BaseModel):
-#     username: str
-#     scopes: list[str] = []
+class RefreshToken(BaseModel):
+    access_token: str
+    token_type: str
