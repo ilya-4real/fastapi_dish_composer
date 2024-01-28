@@ -45,4 +45,4 @@ async def register_account(
 
 @router.get("/me")
 async def get_account(token: Annotated[str, Depends(ouath2_bearer)]):
-    print(token)
+    ...
