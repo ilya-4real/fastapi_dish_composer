@@ -1,0 +1,22 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      context: .
+    container_name: app
+    env_file:
+      - .env-prod
+    ports: 
+      - 8000:80
+    depends_on:
+      - mongodb
+
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    expose:
+      - 27017
+    env_file:
+      - .env-prod
