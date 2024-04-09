@@ -232,6 +232,17 @@ test = ["certifi", "pretend", "pytest (>=6.2.0)", "pytest-benchmark", "pytest-co
 test-randomorder = ["pytest-randomly"]
 
 [[package]]
+name = "dishka"
+version = "1.0.0"
+description = "Minimal DI framework"
+optional = false
+python-versions = ">=3.10"
+files = [
+    {file = "dishka-1.0.0-py3-none-any.whl", hash = "sha256:d664a8f0aa26d84ca5358ecbccbd35af764cd4390b003c7aad93b7918d76ec94"},
+    {file = "dishka-1.0.0.tar.gz", hash = "sha256:faed0353e43515d3485557037ce4cb63a3acf747e32f6c6b3bf1ff286cbf689b"},
+]
+
+[[package]]
 name = "dnspython"
 version = "2.4.2"
 description = "DNS toolkit"
@@ -867,4 +878,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "4471f65b86fd92f2fcb186c2632163f3b269ba5f6f6941b6ab0416c4f9cd59af"
+content-hash = "b8fc6baeee78743e9f47e93b90cfe51a9ef5b8600620bb56286054fe82df92ff"
