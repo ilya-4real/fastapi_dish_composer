@@ -1,19 +1,11 @@
-from dataclasses import dataclass, field
-from typing import Literal
+from dataclasses import dataclass
 
 from fastapi_proj.domain.enteties.base import BaseEntity
-
-
-@dataclass
-class Ingredient(BaseEntity):
-    title: str
-    category: Literal["garnish", "sauce", "meat"]
-    amount: int
+from fastapi_proj.domain.enteties.component import Component
 
 
 @dataclass
 class Recipe(BaseEntity):
-    title: str = field(kw_only=True)
-    category: str = field(kw_only=True)
-    description: str = field(kw_only=True)
-    ingredients: list[Ingredient] = field(default_factory=list)
+    title: str
+    description: str
+    components: list[Component]

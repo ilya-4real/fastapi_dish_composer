@@ -1,16 +1,24 @@
-from dotenv import load_dotenv
-import os
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-load_dotenv()
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
+    MONGO_USERNAME: str
+    MONGO_PASSWORD: str
+    MONGO_PORT: int
+    MONGO_HOST: str
+    mongo_component_collection: str = Field(
+        default="components", alias="MONGO_COMP_COLL"
+    )
+    mongo_recipe_collection: str = Field(
+        default="recipies", alias="MONGO_REC_COLL"
+    )
+    mongo_db_name: str = Field(default="dish", alias="MONGO_DB_NAME")
 
-LOGGING_LEVEL = "INFO"
-MONGO_USER = os.environ.get("MONGO_INITDB_USERNAME")
-MONGO_PASSWORD = os.environ.get("MONGO_INITDB_PASSWORD")
-MONGO_HOST = os.environ.get("MONGO_HOST")
-MONGO_PORT = os.environ.get("MONGO_PORT")
+    @property
+    def mongo_uri(self):
+        return f"mongodb://{self.MONGO_USERNAME}:{self.MONGO_PASSWORD}@{self.MONGO_HOST}:{self.MONGO_PORT}"
 
-JWT_SECRET = str(os.environ.get("JWT_SECRET"))
-JWT_ALGORITHM = str(os.environ.get("JWT_ALGORITHM"))
 
-MONGO_URI = f"mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}"
+settings = Settings()  # type: ignore

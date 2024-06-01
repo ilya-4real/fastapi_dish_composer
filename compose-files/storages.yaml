@@ -1,0 +1,15 @@
+services:
+  mongo:
+    image: mongo:8.0.0-rc6-jammy
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - 27017:27017
+    networks:
+      - mongonet
+
+networks:
+  mongonet:
+    driver: bridge
