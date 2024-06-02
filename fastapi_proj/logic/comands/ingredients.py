@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Any
 
 from fastapi_proj.domain.enteties.component import (
     Component,
@@ -29,6 +30,11 @@ class GetComponentsByCategory(BaseCommand):
 @dataclass(frozen=True)
 class GetComponentByTitleCommand(BaseCommand):
     title: CommonTitle
+
+
+@dataclass(frozen=True)
+class GetRandomComponentInCategoryCommand(BaseCommand):
+    category: ComponentCategory
 
 
 @dataclass
@@ -67,4 +73,20 @@ class GetComponentByTitleHandler(
     async def handle(self, command: GetComponentByTitleCommand) -> dict:
         return await self.component_repository.get_component_by_title(
             command.title
+        )
+
+
+@dataclass
+class GetRandomComponentInCategoryHandler(
+    BaseCommandHandler[GetRandomComponentInCategoryCommand, dict[str, Any]]
+):
+    component_repository: BaseComponentRepository
+
+    async def handle(
+        self, command: GetRandomComponentInCategoryCommand
+    ) -> dict[str, Any]:
+        return (
+            await self.component_repository.get_random_component_by_category(
+                command.category
+            )
         )

@@ -19,6 +19,8 @@ from fastapi_proj.logic.comands.ingredients import (
     GetComponentByTitleHandler,
     GetComponentsByCategory,
     GetComponentsByCategoryHandler,
+    GetRandomComponentInCategoryCommand,
+    GetRandomComponentInCategoryHandler,
 )
 from fastapi_proj.logic.mediator import Mediator
 
@@ -85,6 +87,14 @@ def _init_container() -> Container:
             GetComponentByTitleCommand,
             [
                 GetComponentByTitleHandler(
+                    container.resolve(BaseComponentRepository)  # type: ignore
+                )
+            ],
+        )
+        mediator.register_command(
+            GetRandomComponentInCategoryCommand,
+            [
+                GetRandomComponentInCategoryHandler(
                     container.resolve(BaseComponentRepository)  # type: ignore
                 )
             ],

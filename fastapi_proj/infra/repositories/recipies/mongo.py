@@ -1,5 +1,6 @@
 from abc import ABC
 from dataclasses import dataclass
+from typing import Any
 
 from motor.core import AgnosticClient
 from pymongo.errors import DuplicateKeyError
@@ -56,7 +57,14 @@ class MongoComponentRepository(
 
     async def get_random_component_by_category(
         self, category: ComponentCategory
-    ) -> Component: ...
+    ) -> dict[str, Any]:  # type: ignore
+        cursor = self._collection.aggregate(
+            [
+                {"$match": {"category": category.value}},
+                {"$sample": {"size": 1}},
+            ]
+        )
+        return await cursor.next()
 
     async def get_component_by_title(self, title: CommonTitle) -> dict:
         result = await self._collection.find_one(
