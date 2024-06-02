@@ -1,26 +1,33 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 from fastapi_proj.domain.enteties.base import BaseEntity
-from fastapi_proj.domain.values.ingredient import (
+from fastapi_proj.domain.values.components import (
     CommonTitle,
     IngredientAmount,
 )
 
 
-class ComponentCategory(Enum):
-    meat = 1
-    garnish = 2
-    sauce = 3
+class ComponentCategory(str, Enum):
+    meat = "meat"
+    garnish = "garnish"
+    sauce = "sauce"
+
+
+@dataclass
+class Ingredient:
+    title: CommonTitle
+    amount: IngredientAmount
 
 
 @dataclass
 class Component(BaseEntity):
     title: CommonTitle
     category: ComponentCategory
-    ingredients: dict[CommonTitle, IngredientAmount] = field(init=False)
+    ingredients: list[Ingredient]
 
     def add_ingredient(
-        self, ingredient: CommonTitle, amount: IngredientAmount
+        self,
+        ingredient: Ingredient,
     ) -> None:
-        self.ingredients[ingredient] = amount
+        self.ingredients.append(ingredient)

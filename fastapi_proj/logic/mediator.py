@@ -15,9 +15,11 @@ class Mediator:
     )
 
     def register_command(
-        self, command: BaseCommand, handlers: Iterable[BaseCommandHandler]
+        self,
+        command: Type[BaseCommand],
+        handlers: Iterable[BaseCommandHandler],
     ) -> None:
-        self.commands_map[command.__class__].extend(handlers)
+        self.commands_map[command].extend(handlers)
 
     async def handle_command(self, command: BaseCommand):
         command_type = command.__class__

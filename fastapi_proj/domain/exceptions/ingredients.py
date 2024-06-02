@@ -4,6 +4,13 @@ from fastapi_proj.domain.exceptions.base import ApplicationException
 
 
 @dataclass
+class DuplicateComponentException(ApplicationException):
+    @property
+    def message(self):
+        return "component name should be unique"
+
+
+@dataclass
 class IngredientNameTooLongException(ApplicationException):
     text: str
 

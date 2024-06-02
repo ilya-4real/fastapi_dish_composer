@@ -15,11 +15,12 @@ from fastapi_proj.infra.repositories.recipies.mongo import (
 from fastapi_proj.logic.comands.ingredients import (
     CreateComponentCommand,
     CreateComponentCommandHandler,
+    GetComponentByTitleCommand,
+    GetComponentByTitleHandler,
+    GetComponentsByCategory,
+    GetComponentsByCategoryHandler,
 )
 from fastapi_proj.logic.mediator import Mediator
-
-# from fastapi_proj.logic.eventbus import EventBus
-# from fastapi_proj.logic.mediator import Mediator
 
 
 @lru_cache(1)
@@ -29,8 +30,6 @@ def init_container() -> Container:
 
 def _init_container() -> Container:
     container = Container()
-    # container.register(EventBus, scope=Scope.singleton)
-    # container.register(Mediator, scope=Scope.singleton)
     print(settings.mongo_uri)
     mongo_client = AsyncIOMotorClient(
         settings.mongo_uri, serverSelectionTimeoutMS=3000
@@ -65,9 +64,27 @@ def _init_container() -> Container:
     def init_mediator():
         mediator = Mediator()
         mediator.register_command(
-            CreateComponentCommand,  # type: ignore
+            CreateComponentCommand,
             [
                 CreateComponentCommandHandler(
+                    container.resolve(BaseComponentRepository)  # type: ignore
+                )
+            ],
+        )
+
+        mediator.register_command(
+            GetComponentsByCategory,
+            [
+                GetComponentsByCategoryHandler(
+                    container.resolve(BaseComponentRepository)  # type: ignore
+                )
+            ],
+        )
+
+        mediator.register_command(
+            GetComponentByTitleCommand,
+            [
+                GetComponentByTitleHandler(
                     container.resolve(BaseComponentRepository)  # type: ignore
                 )
             ],
