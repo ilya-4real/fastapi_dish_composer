@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -24,6 +25,8 @@ from fastapi_proj.logic.comands.ingredients import (
 )
 from fastapi_proj.logic.mediator import Mediator
 
+logger = logging.getLogger(__name__)
+
 
 @lru_cache(1)
 def init_container() -> Container:
@@ -32,10 +35,9 @@ def init_container() -> Container:
 
 def _init_container() -> Container:
     container = Container()
-    print(settings.mongo_uri)
-    mongo_client = AsyncIOMotorClient(
-        settings.mongo_uri, serverSelectionTimeoutMS=3000
-    )
+
+    mongo_client = AsyncIOMotorClient(settings.mongo_uri, serverSelectionTimeoutMS=3000)
+    logger.debug(settings.mongo_uri)
 
     def init_mongo_component_rep():
         return MongoComponentRepository(

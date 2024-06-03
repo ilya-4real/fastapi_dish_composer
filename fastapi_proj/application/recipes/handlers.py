@@ -1,4 +1,3 @@
-from pprint import pprint
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -37,9 +36,7 @@ async def create_component(
     mediator: Annotated[Mediator, Depends(get_meditor)],
 ):
     ingredients = [
-        Ingredient(
-            CommonTitle(ingredient.title), IngredientAmount(ingredient.amount)
-        )
+        Ingredient(CommonTitle(ingredient.title), IngredientAmount(ingredient.amount))
         for ingredient in component.ingredients
     ]
     command = CreateComponentCommand(

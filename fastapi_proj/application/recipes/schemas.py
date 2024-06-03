@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field
 
 from fastapi_proj.domain.enteties.component import ComponentCategory
 
