@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "disable_existing_loggers": "false",
+    "formatters": {
+        "simple": {"format": "%(asctime)s  (%(name)s)  %(levelname)s: %(msg)s"},
+        "colorized": {
+            "format": "%(levelname)s: %(msg)s",
+            "use_colors": "true"
+                }
+                },
+    "handlers": {
+        "queue_handler": {
+            "class": "logging.handlers.QueueHandler",
+            "handlers": ["stdout", "file"],
+            "respect_handler_level": "true"
+        },
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "colorized",
+            "stream": "ext://sys.stdout"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "WARNING",
+            "formatter": "simple",
+            "filename": "logs/my_app.log",
+            "maxBytes": 10000,
+            "backupCount": 3
+        }
+    },
+    "loggers": {"root": {"level": "DEBUG", "handlers": ["queue_handler"]},
+    "uvicorn": {"level": "DEBUG", "handlers": ["queue_handler"]}
+}
+}

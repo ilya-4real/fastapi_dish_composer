@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Any
 
 from fastapi_proj.domain.enteties.component import Component, ComponentCategory
 from fastapi_proj.domain.enteties.recipe import Recipe
@@ -20,7 +21,7 @@ class BaseComponentRepository(ABC):
     @abstractmethod
     async def get_random_component_by_category(
         self, category: ComponentCategory
-    ) -> Component: ...
+    ) -> dict[str, Any]: ...
 
     @abstractmethod
     async def get_components_by_category(

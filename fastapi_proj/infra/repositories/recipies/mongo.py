@@ -1,5 +1,7 @@
 from abc import ABC
 from dataclasses import dataclass
+from logging import getLogger
+from typing import Any
 
 from motor.core import AgnosticClient
 from pymongo.errors import DuplicateKeyError
@@ -18,6 +20,8 @@ from fastapi_proj.infra.repositories.recipies.base import (
     BaseRecipeRepository,
 )
 
+logger = getLogger(__name__)
+
 
 @dataclass
 class AbstractMongoRepository(ABC):
@@ -31,9 +35,7 @@ class AbstractMongoRepository(ABC):
 
 
 @dataclass
-class MongoComponentRepository(
-    BaseComponentRepository, AbstractMongoRepository
-):
+class MongoComponentRepository(BaseComponentRepository, AbstractMongoRepository):
     async def add_component(self, component: Component) -> None:
         try:
             await self._collection.insert_one(
@@ -51,18 +53,23 @@ class MongoComponentRepository(
             .skip(offset)
         )
         result = await cursor.to_list(limit)
-        print(result)
+        logger.debug(result)
         return result
 
     async def get_random_component_by_category(
         self, category: ComponentCategory
-    ) -> Component: ...
+    ) -> dict[str, Any]:  # type: ignore
+        cursor = self._collection.aggregate(
+            [
+                {"$match": {"category": category.value}},
+                {"$sample": {"size": 1}},
+            ]
+        )
+        return await cursor.next()
 
     async def get_component_by_title(self, title: CommonTitle) -> dict:
-        result = await self._collection.find_one(
-            filter={"title": title.as_generic()}
-        )
-        print(result)
+        result = await self._collection.find_one(filter={"title": title.as_generic()})
+        logger.debug(result)
         return result  # type: ignore
 
 
