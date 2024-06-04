@@ -33,3 +33,6 @@ class BaseComponentRepository(ABC):
 
     @abstractmethod
     async def delete_by_title(self, title: CommonTitle) -> None: ...
+
+    @abstractmethod
+    async def update_one_component_ingredients(self, component: Component) -> None: ...

@@ -13,7 +13,7 @@ from fastapi_proj.infra.repositories.recipies.mongo import (
     MongoComponentRepository,
     MongoRecipeRepository,
 )
-from fastapi_proj.logic.comands.ingredients import (
+from fastapi_proj.logic.comands.components import (
     CreateComponentCommand,
     CreateComponentCommandHandler,
     DeleteComponentByTitleCommand,
@@ -24,6 +24,8 @@ from fastapi_proj.logic.comands.ingredients import (
     GetComponentsByCategoryHandler,
     GetRandomComponentInCategoryCommand,
     GetRandomComponentInCategoryHandler,
+    UpdateComponentByTitleCommand,
+    UpdateComponentByTitleHandler,
 )
 from fastapi_proj.logic.mediator import Mediator
 
@@ -107,6 +109,15 @@ def _init_container() -> Container:
             DeleteComponentByTitleCommand,
             [
                 DeleteComponentByTitleHandler(
+                    container.resolve(BaseComponentRepository)  # type: ignore
+                )
+            ],
+        )
+
+        mediator.register_command(
+            UpdateComponentByTitleCommand,
+            [
+                UpdateComponentByTitleHandler(
                     container.resolve(BaseComponentRepository)  # type: ignore
                 )
             ],

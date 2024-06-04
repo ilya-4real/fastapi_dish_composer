@@ -75,6 +75,21 @@ class MongoComponentRepository(BaseComponentRepository, AbstractMongoRepository)
     async def delete_by_title(self, title: CommonTitle) -> None:
         await self._collection.delete_one(filter={"title": title.as_generic()})
 
+    async def update_one_component_ingredients(self, component: Component) -> None:
+        ingredients = [
+            {"title": i.title.as_generic(), "amount": i.amount.as_generic()}
+            for i in component.ingredients
+        ]
+        logger.debug(ingredients)
+        await self._collection.update_one(
+            {"title": component.title.as_generic()},
+            {
+                "$set": {
+                    "ingredients": ingredients,
+                }
+            },
+        )
+
 
 @dataclass
 class MongoRecipeRepository(BaseRecipeRepository, AbstractMongoRepository):

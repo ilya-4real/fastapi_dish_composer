@@ -24,3 +24,7 @@ class ComponentResponceSchema(BaseModel):
 
 class ListOfComponentsResponceSchema(BaseModel):
     components: list[ComponentResponceSchema]
+
+
+class UpdateComponentSchema(BaseModel):
+    ingredients: list[Ingredient]

@@ -7,14 +7,14 @@
 	    },
         "uviformatter": {
             "()": "uvicorn.logging.DefaultFormatter",
-            "fmt": "%(levelprefix)s  (%(name)s)  %(message)s",
+            "fmt": "%(levelprefix)s  (%(name)s -%(lineno)d)  %(message)s",
             "use_colors": "true"
         }
     },
     "handlers": {
         "queue_handler": {
             "class": "logging.handlers.QueueHandler",
-            "handlers": ["stdout", "file"],
+            "handlers": ["stdout"],
             "respect_handler_level": "true"
         },
         "stdout": {

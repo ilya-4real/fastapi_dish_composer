@@ -45,6 +45,13 @@ class DeleteComponentByTitleCommand(BaseCommand):
     title: CommonTitle
 
 
+@dataclass(frozen=True)
+class UpdateComponentByTitleCommand(BaseCommand):
+    title: CommonTitle
+    category: ComponentCategory
+    ingredients: list[Ingredient]
+
+
 @dataclass
 class CreateComponentCommandHandler(BaseCommandHandler[CreateComponentCommand, str]):
     component_repository: BaseComponentRepository
@@ -98,3 +105,17 @@ class DeleteComponentByTitleHandler(
 
     async def handle(self, command: DeleteComponentByTitleCommand) -> None:
         return await self.component_repository.delete_by_title(command.title)
+
+
+@dataclass
+class UpdateComponentByTitleHandler(
+    BaseCommandHandler[UpdateComponentByTitleCommand, None]
+):
+    component_repository: BaseComponentRepository
+
+    async def handle(self, command: UpdateComponentByTitleCommand) -> None:
+        component = Component(command.title, command.category, command.ingredients)
+        result = await self.component_repository.update_one_component_ingredients(
+            component
+        )
+        return result

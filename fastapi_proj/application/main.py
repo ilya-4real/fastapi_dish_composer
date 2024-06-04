@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from fastapi_proj.application.recipes.handlers import router as recipe_handler
+from fastapi_proj.application.components.handlers import router as recipe_handler
 from fastapi_proj.domain.exceptions.base import ApplicationException
 
 
