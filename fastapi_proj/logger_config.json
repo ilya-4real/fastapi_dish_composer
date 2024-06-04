@@ -2,12 +2,15 @@
     "version": 1,
     "disable_existing_loggers": "false",
     "formatters": {
-        "simple": {"format": "%(asctime)s  (%(name)s)  %(levelname)s: %(msg)s"},
-        "colorized": {
-            "format": "%(levelname)s: %(msg)s",
+        "simple": {
+	        "format": "%(asctime)s  (%(name)s)  %(levelname)s: %(msg)s"
+	    },
+        "uviformatter": {
+            "()": "uvicorn.logging.DefaultFormatter",
+            "fmt": "%(levelprefix)s  (%(name)s)  %(message)s",
             "use_colors": "true"
-                }
-                },
+        }
+    },
     "handlers": {
         "queue_handler": {
             "class": "logging.handlers.QueueHandler",
@@ -17,8 +20,8 @@
         "stdout": {
             "class": "logging.StreamHandler",
             "level": "DEBUG",
-            "formatter": "colorized",
-            "stream": "ext://sys.stdout"
+            "formatter": "uviformatter",
+            "stream": "ext://sys.stderr"
         },
         "file": {
             "class": "logging.handlers.RotatingFileHandler",
@@ -29,7 +32,14 @@
             "backupCount": 3
         }
     },
-    "loggers": {"root": {"level": "DEBUG", "handlers": ["queue_handler"]},
-    "uvicorn": {"level": "DEBUG", "handlers": ["queue_handler"]}
-}
+    "loggers": {
+	    "root": {
+		    "level": "DEBUG", 
+		    "handlers": ["queue_handler"]
+		},
+	    "uvicorn": {
+		    "level": "DEBUG", 
+		    "handlers": ["queue_handler"]
+		}
+	}
 }

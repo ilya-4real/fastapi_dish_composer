@@ -30,3 +30,6 @@ class BaseComponentRepository(ABC):
 
     @abstractmethod
     async def get_component_by_title(self, title: CommonTitle) -> dict: ...
+
+    @abstractmethod
+    async def delete_by_title(self, title: CommonTitle) -> None: ...
