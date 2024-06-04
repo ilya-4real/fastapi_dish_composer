@@ -72,6 +72,9 @@ class MongoComponentRepository(BaseComponentRepository, AbstractMongoRepository)
         logger.debug(result)
         return result  # type: ignore
 
+    async def delete_by_title(self, title: CommonTitle) -> None:
+        await self._collection.delete_one(filter={"title": title.as_generic()})
+
 
 @dataclass
 class MongoRecipeRepository(BaseRecipeRepository, AbstractMongoRepository):

@@ -40,6 +40,11 @@ class GetRandomComponentInCategoryCommand(BaseCommand):
     category: ComponentCategory
 
 
+@dataclass(frozen=True)
+class DeleteComponentByTitleCommand(BaseCommand):
+    title: CommonTitle
+
+
 @dataclass
 class CreateComponentCommandHandler(BaseCommandHandler[CreateComponentCommand, str]):
     component_repository: BaseComponentRepository
@@ -83,3 +88,13 @@ class GetRandomComponentInCategoryHandler(
         return await self.component_repository.get_random_component_by_category(
             command.category
         )
+
+
+@dataclass
+class DeleteComponentByTitleHandler(
+    BaseCommandHandler[DeleteComponentByTitleCommand, None]
+):
+    component_repository: BaseComponentRepository
+
+    async def handle(self, command: DeleteComponentByTitleCommand) -> None:
+        return await self.component_repository.delete_by_title(command.title)
