@@ -14,6 +14,7 @@ from fastapi_proj.domain.exceptions.ingredients import (
 from fastapi_proj.domain.values.components import CommonTitle
 from fastapi_proj.infra.repositories.converters.converters import (
     convert_component_from_entity_to_document,
+    convert_recipe_to_document,
 )
 from fastapi_proj.infra.repositories.recipies.base import (
     BaseComponentRepository,
@@ -93,4 +94,6 @@ class MongoComponentRepository(BaseComponentRepository, AbstractMongoRepository)
 
 @dataclass
 class MongoRecipeRepository(BaseRecipeRepository, AbstractMongoRepository):
-    async def add_recipe(self, recipe: Recipe) -> None: ...
+    async def add_recipe(self, recipe: Recipe) -> None:
+        document = convert_recipe_to_document(recipe)
+        await self._collection.insert_one(document)

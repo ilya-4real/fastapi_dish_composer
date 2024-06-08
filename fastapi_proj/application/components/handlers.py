@@ -2,7 +2,6 @@ import logging
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response
-from punq import Container
 
 from fastapi_proj.application.components.schemas import (
     ComponentResponceSchema,
@@ -10,12 +9,12 @@ from fastapi_proj.application.components.schemas import (
     ListOfComponentsResponceSchema,
     UpdateComponentSchema,
 )
+from fastapi_proj.application.dependencies import get_mediator
 from fastapi_proj.domain.enteties.component import (
     ComponentCategory,
     Ingredient,
 )
 from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
-from fastapi_proj.infra.container import init_container
 from fastapi_proj.logic.comands.components import (
     CreateComponentCommand,
     DeleteComponentByTitleCommand,
@@ -31,15 +30,10 @@ router = APIRouter(prefix="/components", tags=["components"])
 logger = logging.getLogger(__name__)
 
 
-def get_meditor(container: Annotated[Container, Depends(init_container)]):
-    mediator: Mediator = container.resolve(Mediator)  # type: ignore
-    return mediator
-
-
 @router.post("", responses={201: {"model": None}})
 async def create_component(
     component: CreateComponentShema,
-    mediator: Annotated[Mediator, Depends(get_meditor)],
+    mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
     ingredients = [
         Ingredient(CommonTitle(ingredient.title), IngredientAmount(ingredient.amount))
@@ -56,7 +50,7 @@ async def create_component(
 @router.get("/", response_model=ListOfComponentsResponceSchema)
 async def get_components_by_category(
     category: ComponentCategory,
-    mediator: Annotated[Mediator, Depends(get_meditor)],
+    mediator: Annotated[Mediator, Depends(get_mediator)],
     limit: int = 10,
     offset: int = 0,
 ):
@@ -68,7 +62,7 @@ async def get_components_by_category(
 @router.get("/random", response_model=ComponentResponceSchema)
 async def get_one_random_component_in_category(
     category: ComponentCategory,
-    mediator: Annotated[Mediator, Depends(get_meditor)],
+    mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
     command = GetRandomComponentInCategoryCommand(category)
     result, *_ = await mediator.handle_command(command)
@@ -81,7 +75,7 @@ async def get_one_random_component_in_category(
 )
 async def get_one_component_by_title(
     component_title: str,
-    mediator: Annotated[Mediator, Depends(get_meditor)],
+    mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
     command = GetComponentByTitleCommand(CommonTitle(component_title))
     result, *_ = await mediator.handle_command(command)
@@ -94,7 +88,7 @@ async def get_one_component_by_title(
 @router.delete("/{component_title}", responses={204: {"model": None}})
 async def delete_component_by_title(
     component_title: str,
-    mediator: Annotated[Mediator, Depends(get_meditor)],
+    mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
     command = DeleteComponentByTitleCommand(CommonTitle(component_title))
     result, *_ = await mediator.handle_command(command)
@@ -106,7 +100,7 @@ async def update_ingredients(
     component_title: str,
     category: ComponentCategory,
     component: UpdateComponentSchema,
-    mediator: Annotated[Mediator, Depends(get_meditor)],
+    mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
     ingredients = [
         Ingredient(CommonTitle(ingredient.title), IngredientAmount(ingredient.amount))

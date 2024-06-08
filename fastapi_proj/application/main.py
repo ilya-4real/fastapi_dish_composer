@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 
 from fastapi_proj.application.components.handlers import router as component_router
 from fastapi_proj.application.recipies.handlers import router as recipe_router
+from fastapi_proj.application.users.handlers import router as users_router
 from fastapi_proj.domain.exceptions.base import ApplicationException
 
 
@@ -32,3 +33,4 @@ async def handle_application_exception(request: Request, exc: ApplicationExcepti
 
 app.include_router(component_router)
 app.include_router(recipe_router)
+app.include_router(users_router)

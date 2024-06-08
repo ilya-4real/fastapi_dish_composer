@@ -1,6 +1,7 @@
 from typing import Any
 
 from fastapi_proj.domain.enteties.component import Component
+from fastapi_proj.domain.enteties.recipe import Recipe
 
 
 def convert_component_from_entity_to_document(
@@ -20,3 +21,18 @@ def convert_component_from_entity_to_document(
             }
         )
     return data
+
+
+def convert_recipe_to_document(recipe: Recipe) -> dict:
+    document = {
+        "oid": recipe.oid,
+        "title": recipe.title,
+        "author": recipe.author,
+        "description": recipe.description,
+        "components": [],
+    }
+    for component in recipe.components:
+        document["components"].append(
+            convert_component_from_entity_to_document(component)
+        )
+    return document

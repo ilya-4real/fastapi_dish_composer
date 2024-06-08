@@ -13,6 +13,8 @@ from fastapi_proj.infra.repositories.recipies.mongo import (
     MongoComponentRepository,
     MongoRecipeRepository,
 )
+from fastapi_proj.infra.repositories.users.base import BaseUserRepository
+from fastapi_proj.infra.repositories.users.mongo import MongoUserRepository
 from fastapi_proj.logic.comands.components import (
     CreateComponentCommand,
     CreateComponentCommandHandler,
@@ -27,6 +29,8 @@ from fastapi_proj.logic.comands.components import (
     UpdateComponentByTitleCommand,
     UpdateComponentByTitleHandler,
 )
+from fastapi_proj.logic.comands.recipe import CreateRecipeCommand, CreateRecipeHandler
+from fastapi_proj.logic.comands.users import CreateUserCommand, CreateUserHandler
 from fastapi_proj.logic.mediator import Mediator
 
 logger = logging.getLogger(__name__)
@@ -43,18 +47,23 @@ def _init_container() -> Container:
     mongo_client = AsyncIOMotorClient(settings.mongo_uri, serverSelectionTimeoutMS=3000)
     logger.debug(settings.mongo_uri)
 
-    def init_mongo_component_rep():
+    def init_mongo_component_rep() -> MongoComponentRepository:
         return MongoComponentRepository(
             mongo_client,
             settings.mongo_db_name,
             settings.mongo_component_collection,
         )
 
-    def init_mongo_recipe_rep():
+    def init_mongo_recipe_rep() -> MongoRecipeRepository:
         return MongoRecipeRepository(
             mongo_client,
             settings.mongo_db_name,
             settings.mongo_recipe_collection,
+        )
+
+    def init_mongo_users_rep() -> MongoUserRepository:
+        return MongoUserRepository(
+            mongo_client, settings.mongo_db_name, settings.mongo_users_collection
         )
 
     container.register(
@@ -67,6 +76,10 @@ def _init_container() -> Container:
         BaseRecipeRepository,
         factory=init_mongo_recipe_rep,
         scope=Scope.singleton,
+    )
+
+    container.register(
+        BaseUserRepository, factory=init_mongo_users_rep, scope=Scope.singleton
     )
 
     def init_mediator():
@@ -122,6 +135,22 @@ def _init_container() -> Container:
                 )
             ],
         )
+
+        mediator.register_command(
+            CreateUserCommand,
+            [CreateUserHandler(container.resolve(BaseUserRepository))],  # type: ignore
+        )
+
+        mediator.register_command(
+            CreateRecipeCommand,
+            [
+                CreateRecipeHandler(
+                    container.resolve(BaseRecipeRepository),  # type: ignore
+                    container.resolve(BaseUserRepository),  # type: ignore
+                )
+            ],
+        )
+
         return mediator
 
     container.register(Mediator, factory=init_mediator, scope=Scope.singleton)

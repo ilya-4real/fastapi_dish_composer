@@ -9,6 +9,7 @@ from fastapi_proj.domain.values.components import (
 
 
 class ComponentCategory(str, Enum):
+    no_category = "none"
     meat = "meat"
     garnish = "garnish"
     sauce = "sauce"
