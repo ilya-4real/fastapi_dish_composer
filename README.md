@@ -3,6 +3,13 @@ ready to go API for storing, creating, and generating random recipes.
 
 > ⚠️ project curently is under active developing
 
+
+## Used tech
+- `FastAPI` - as python web framework
+- `mongodb` - as storage
+- `Docker/ Docker compose` - as container runtime
+- `punq` - as DI framework 
+
 ## Start project for dev purposes
 
 - install dependencies
