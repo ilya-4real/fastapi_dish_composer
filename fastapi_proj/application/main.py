@@ -4,7 +4,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from fastapi_proj.application.components.handlers import router as recipe_handler
+from fastapi_proj.application.components.handlers import router as component_router
+from fastapi_proj.application.recipies.handlers import router as recipe_router
 from fastapi_proj.domain.exceptions.base import ApplicationException
 
 
@@ -29,4 +30,5 @@ async def handle_application_exception(request: Request, exc: ApplicationExcepti
     return JSONResponse(content={"error": exc.message}, status_code=exc.status_code)
 
 
-app.include_router(recipe_handler)
+app.include_router(component_router)
+app.include_router(recipe_router)

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Type
 
 from fastapi_proj.domain.events.base import BaseEvent
 from fastapi_proj.logic.comands.base import BaseCommand
@@ -8,7 +7,7 @@ from fastapi_proj.logic.exceptions.base import LogicException
 
 @dataclass
 class EventHandlerNotRegisteredError(LogicException):
-    event_type: Type[BaseEvent]
+    event_type: type[BaseEvent]
 
     @property
     def message(self) -> str:
@@ -17,7 +16,7 @@ class EventHandlerNotRegisteredError(LogicException):
 
 @dataclass
 class CommandHandlerNotRegisteredError(LogicException):
-    command_type: Type[BaseCommand]
+    command_type: type[BaseCommand]
 
     @property
     def message(self):

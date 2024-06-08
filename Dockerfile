@@ -1,15 +1,15 @@
-from python:3.12
+FROM python:3.12
 
-workdir /code
-run pip install poetry
+WORKDIR /code
+RUN pip install poetry
 
-copy poetry.lock /code
-copy pyproject.toml /code
+COPY poetry.lock /code
+COPY pyproject.toml /code
 
-run poetry config virtualenvs.create false
-run poetry install
+RUN poetry config virtualenvs.create false
+RUN poetry install
 
-copy . /code
+COPY . /code
 
 
-cmd uvicorn main:app --host 0.0.0.0 --port 80
+CMD uvicorn main:app --host 0.0.0.0 --port 80

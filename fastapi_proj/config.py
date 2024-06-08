@@ -11,9 +11,7 @@ class Settings(BaseSettings):
     mongo_component_collection: str = Field(
         default="components", alias="MONGO_COMP_COLL"
     )
-    mongo_recipe_collection: str = Field(
-        default="recipies", alias="MONGO_REC_COLL"
-    )
+    mongo_recipe_collection: str = Field(default="recipies", alias="MONGO_REC_COLL")
     mongo_db_name: str = Field(default="dish", alias="MONGO_DB_NAME")
 
     @property
