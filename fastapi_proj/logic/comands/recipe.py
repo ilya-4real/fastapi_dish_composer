@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from logging import getLogger
 
-from fastapi_proj.domain.enteties.component import Component
+from fastapi_proj.domain.enteties.component import Component, ComponentCategory
 from fastapi_proj.domain.enteties.recipe import Recipe
 from fastapi_proj.infra.repositories.recipies.base import (
     BaseComponentRepository,
@@ -8,6 +9,8 @@ from fastapi_proj.infra.repositories.recipies.base import (
 )
 from fastapi_proj.infra.repositories.users.base import BaseUserRepository
 from fastapi_proj.logic.comands.base import BaseCommand, BaseCommandHandler
+
+logger = getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -20,8 +23,28 @@ class GenerateRandomRecipeHandler(
 ):
     component_repository: BaseComponentRepository
 
-    async def handle(self, command: GenerateRandomRecipeCommand) -> Recipe:  # type: ignore
-        ...
+    async def handle(self, command: GenerateRandomRecipeCommand) -> dict:
+        meat = await self.component_repository.get_random_component_by_category(
+            ComponentCategory("meat")
+        )
+        garnish = await self.component_repository.get_random_component_by_category(
+            ComponentCategory("garnish")
+        )
+        sauce = await self.component_repository.get_random_component_by_category(
+            ComponentCategory("sauce")
+        )
+
+        recipe = {
+            "title": f"{meat['title']}, {garnish['title']}, {sauce['title']}",
+            "description": "",
+            "components": [meat, garnish, sauce],
+            "likes": 0,
+            "author": "Builder",
+        }
+
+        # logger.debug(recipe)
+
+        return recipe
 
 
 @dataclass(frozen=True)

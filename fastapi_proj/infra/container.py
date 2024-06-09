@@ -32,6 +32,8 @@ from fastapi_proj.logic.comands.components import (
 from fastapi_proj.logic.comands.recipe import (
     CreateRecipeCommand,
     CreateRecipeHandler,
+    GenerateRandomRecipeCommand,
+    GenerateRandomRecipeHandler,
     GetPopularRecipesCommand,
     GetPopularRecipesHandler,
     GetRecipeByIdCommand,
@@ -41,7 +43,14 @@ from fastapi_proj.logic.comands.recipe import (
     UnlikeRecipeCommand,
     UnlikeRecipeHandler,
 )
-from fastapi_proj.logic.comands.users import CreateUserCommand, CreateUserHandler
+from fastapi_proj.logic.comands.users import (
+    CreateUserCommand,
+    CreateUserHandler,
+    GetUserCreatedRecipesCommand,
+    GetUserCreatedRecipesHandler,
+    GetUserLikedRecipesCommand,
+    GetUserLikedRecipesHandler,
+)
 from fastapi_proj.logic.mediator import Mediator
 
 logger = logging.getLogger(__name__)
@@ -191,6 +200,20 @@ def _init_container() -> Container:
             [
                 GetPopularRecipesHandler(container.resolve(BaseRecipeRepository))  # type: ignore
             ],
+        )
+        mediator.register_command(
+            GenerateRandomRecipeCommand,
+            [GenerateRandomRecipeHandler(container.resolve(BaseComponentRepository))],  # type: ignore
+        )
+
+        mediator.register_command(
+            GetUserCreatedRecipesCommand,
+            [GetUserCreatedRecipesHandler(container.resolve(BaseUserRepository))],  # type: ignore
+        )
+
+        mediator.register_command(
+            GetUserLikedRecipesCommand,
+            [GetUserLikedRecipesHandler(container.resolve(BaseUserRepository))],  # type: ignore
         )
         return mediator
 

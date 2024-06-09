@@ -31,3 +31,37 @@ class MongoUserRepository(AbstractMongoRepository, BaseUserRepository):
             {"username": username},
             {"$pull": {"liked_recipes": {"recipe_id": recipe_id}}},
         )
+
+    async def get_liked_recipes_by_username(self, username: str) -> dict:
+        cursor = self._collection.aggregate(
+            [
+                {"$match": {"username": username}},
+                {
+                    "$lookup": {
+                        "from": "recipies",
+                        "localField": "liked_recipes.recipe_id",
+                        "foreignField": "oid",
+                        "as": "recipes",
+                    }
+                },
+                {"$project": {"_id": 0, "recipes": 1}},
+            ]
+        )
+        return await cursor.next()
+
+    async def get_created_recipes_by_username(self, username: str) -> dict:
+        cursor = self._collection.aggregate(
+            [
+                {"$match": {"username": username}},
+                {
+                    "$lookup": {
+                        "from": "recipies",
+                        "localField": "created_recipes.recipe_id",
+                        "foreignField": "oid",
+                        "as": "recipes",
+                    }
+                },
+                {"$project": {"_id": 0, "recipes": 1}},
+            ]
+        )
+        return await cursor.next()
