@@ -12,6 +12,18 @@ class BaseRecipeRepository(ABC):
     @abstractmethod
     async def add_recipe(self, recipe: Recipe) -> None: ...
 
+    @abstractmethod
+    async def get_by_id(self, recipe_id: str) -> dict | None: ...
+
+    @abstractmethod
+    async def increase_likes(self, recipe_id: str) -> None: ...
+
+    @abstractmethod
+    async def decrease_likes(self, recipe_id: str) -> None: ...
+
+    @abstractmethod
+    async def get_popular_recipes(self, limit: int, offset: int) -> list: ...
+
 
 @dataclass
 class BaseComponentRepository(ABC):

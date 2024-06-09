@@ -29,6 +29,7 @@ def convert_recipe_to_document(recipe: Recipe) -> dict:
         "title": recipe.title,
         "author": recipe.author,
         "description": recipe.description,
+        "likes": recipe.likes,
         "components": [],
     }
     for component in recipe.components:

@@ -29,7 +29,18 @@ from fastapi_proj.logic.comands.components import (
     UpdateComponentByTitleCommand,
     UpdateComponentByTitleHandler,
 )
-from fastapi_proj.logic.comands.recipe import CreateRecipeCommand, CreateRecipeHandler
+from fastapi_proj.logic.comands.recipe import (
+    CreateRecipeCommand,
+    CreateRecipeHandler,
+    GetPopularRecipesCommand,
+    GetPopularRecipesHandler,
+    GetRecipeByIdCommand,
+    GetRecipeByIdHandler,
+    LikeRecipeCommand,
+    LikeRecipeHandler,
+    UnlikeRecipeCommand,
+    UnlikeRecipeHandler,
+)
 from fastapi_proj.logic.comands.users import CreateUserCommand, CreateUserHandler
 from fastapi_proj.logic.mediator import Mediator
 
@@ -151,6 +162,36 @@ def _init_container() -> Container:
             ],
         )
 
+        mediator.register_command(
+            GetRecipeByIdCommand,
+            [GetRecipeByIdHandler(container.resolve(BaseRecipeRepository))],  # type: ignore
+        )
+
+        mediator.register_command(
+            LikeRecipeCommand,
+            [
+                LikeRecipeHandler(
+                    container.resolve(BaseRecipeRepository),  # type:ignore
+                    container.resolve(BaseUserRepository),  # type: ignore
+                )
+            ],
+        )
+        mediator.register_command(
+            UnlikeRecipeCommand,
+            [
+                UnlikeRecipeHandler(
+                    container.resolve(BaseRecipeRepository),  # type: ignore
+                    container.resolve(BaseUserRepository),  # type: ignore
+                )
+            ],
+        )
+
+        mediator.register_command(
+            GetPopularRecipesCommand,
+            [
+                GetPopularRecipesHandler(container.resolve(BaseRecipeRepository))  # type: ignore
+            ],
+        )
         return mediator
 
     container.register(Mediator, factory=init_mediator, scope=Scope.singleton)

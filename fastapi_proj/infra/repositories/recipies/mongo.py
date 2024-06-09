@@ -97,3 +97,35 @@ class MongoRecipeRepository(BaseRecipeRepository, AbstractMongoRepository):
     async def add_recipe(self, recipe: Recipe) -> None:
         document = convert_recipe_to_document(recipe)
         await self._collection.insert_one(document)
+
+    async def get_by_id(self, recipe_id: str) -> dict | None:
+        result = await self._collection.find_one({"oid": recipe_id})
+        logger.debug(result)
+        return result
+
+    async def increase_likes(self, recipe_id: str) -> None:
+        await self._collection.update_one({"oid": recipe_id}, {"$inc": {"likes": 1}})
+
+    async def decrease_likes(self, recipe_id: str) -> None:
+        await self._collection.update_one({"oid": recipe_id}, {"$inc": {"likes": -1}})
+
+    async def get_popular_recipes(self, limit: int, offset: int) -> list:
+        cursor = (
+            self._collection.find(
+                {"likes": {"$gt": 0}},
+                {
+                    "_id": 0,
+                    "oid": 1,
+                    "title": 1,
+                    "description": 1,
+                    "author": 1,
+                    "likes": 1,
+                },
+            )
+            .sort("likes", -1)
+            .skip(offset)
+            .limit(limit)
+        )
+        result = [item async for item in cursor]
+        logger.debug(result)
+        return result

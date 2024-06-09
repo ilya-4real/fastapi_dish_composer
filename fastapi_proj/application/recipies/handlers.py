@@ -3,14 +3,25 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from fastapi_proj.application.dependencies import get_mediator
-from fastapi_proj.application.recipies.schemas import CreateRecipeSchema
+from fastapi_proj.application.recipies.schemas import (
+    CreateRecipeSchema,
+    QueryRecipesSchema,
+    RecipeLikeSchema,
+    RecipeResponceSchema,
+)
 from fastapi_proj.domain.enteties.component import (
     Component,
     ComponentCategory,
     Ingredient,
 )
 from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
-from fastapi_proj.logic.comands.recipe import CreateRecipeCommand
+from fastapi_proj.logic.comands.recipe import (
+    CreateRecipeCommand,
+    GetPopularRecipesCommand,
+    GetRecipeByIdCommand,
+    LikeRecipeCommand,
+    UnlikeRecipeCommand,
+)
 from fastapi_proj.logic.mediator import Mediator
 
 router = APIRouter(prefix="/recipies", tags=["recipies"])
@@ -40,8 +51,24 @@ async def create_recipe(
     print(recipe)
 
 
+@router.get("/popular")
+async def get_popular_recipes(
+    mediator: Annotated[Mediator, Depends(get_mediator)],
+    limit: int = 10,
+    offset: int = 0,
+):
+    command = GetPopularRecipesCommand(limit, offset)
+    result, *_ = await mediator.handle_command(command)
+    return QueryRecipesSchema.model_validate({"recipes": result})
+
+
 @router.get("/{recipe_id}")
-async def get_recipe_detail(recipe_id: str): ...
+async def get_recipe_detail(
+    recipe_id: str, mediator: Annotated[Mediator, Depends(get_mediator)]
+):
+    command = GetRecipeByIdCommand(recipe_id)
+    result, *_ = await mediator.handle_command(command)
+    return RecipeResponceSchema.model_validate(result)
 
 
 @router.delete("/{recipe_id}")
@@ -53,16 +80,24 @@ async def update_recipe(recipe_id: str): ...
 
 
 @router.post("/{recipe_id}/like")
-async def like_recipe(): ...
+async def like_recipe(
+    recipe_id: str,
+    author: RecipeLikeSchema,
+    mediator: Annotated[Mediator, Depends(get_mediator)],
+):
+    command = LikeRecipeCommand(recipe_id, author.author_id)
+    await mediator.handle_command(command)
 
 
 @router.post("/{recipe_id}/unlike")
-async def unlike_recipe(): ...
+async def unlike_recipe(
+    recipe_id: str,
+    author: RecipeLikeSchema,
+    mediator: Annotated[Mediator, Depends(get_mediator)],
+):
+    command = UnlikeRecipeCommand(author.author_id, recipe_id)
+    await mediator.handle_command(command)
 
 
 @router.get("/random")
 async def generate_random_recipe(): ...
-
-
-@router.get("/popular")
-async def get_popular_recipes(limit: int = 10, offset: int = 0): ...

@@ -43,3 +43,68 @@ class CreateRecipeHandler(BaseCommandHandler[CreateRecipeCommand, None]):
         )
         await self.recipe_repository.add_recipe(recipe)
         await self.user_repository.add_created_recipe(command.author, recipe.oid)
+
+
+@dataclass(frozen=True)
+class GetRecipeByIdCommand(BaseCommand):
+    recipe_id: str
+
+
+@dataclass
+class GetRecipeByIdHandler(BaseCommandHandler[GetRecipeByIdCommand, dict | None]):
+    recipe_repository: BaseRecipeRepository
+
+    async def handle(self, command: GetRecipeByIdCommand) -> dict | None:
+        return await self.recipe_repository.get_by_id(command.recipe_id)
+
+
+@dataclass(frozen=True)
+class LikeRecipeCommand(BaseCommand):
+    recipe_id: str
+    author_id: str
+
+
+@dataclass
+class LikeRecipeHandler(BaseCommandHandler[LikeRecipeCommand, None]):
+    recipe_repository: BaseRecipeRepository
+    user_repository: BaseUserRepository
+
+    async def handle(self, command: LikeRecipeCommand) -> None:
+        await self.recipe_repository.increase_likes(command.recipe_id)
+        await self.user_repository.add_liked_recipe(
+            command.author_id, command.recipe_id
+        )
+
+
+@dataclass(frozen=True)
+class UnlikeRecipeCommand(BaseCommand):
+    username: str
+    recipe_id: str
+
+
+@dataclass
+class UnlikeRecipeHandler(BaseCommandHandler[UnlikeRecipeCommand, None]):
+    recipe_repository: BaseRecipeRepository
+    user_repository: BaseUserRepository
+
+    async def handle(self, command: UnlikeRecipeCommand) -> None:
+        await self.user_repository.remove_liked_recipe(
+            command.username, command.recipe_id
+        )
+        await self.recipe_repository.decrease_likes(command.recipe_id)
+
+
+@dataclass(frozen=True)
+class GetPopularRecipesCommand(BaseCommand):
+    limit: int
+    offset: int
+
+
+@dataclass
+class GetPopularRecipesHandler(BaseCommandHandler[GetPopularRecipesCommand, list]):
+    recipe_repository: BaseRecipeRepository
+
+    async def handle(self, command: GetPopularRecipesCommand) -> list:
+        return await self.recipe_repository.get_popular_recipes(
+            command.limit, command.offset
+        )

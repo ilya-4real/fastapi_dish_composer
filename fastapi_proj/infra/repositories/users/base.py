@@ -10,3 +10,6 @@ class BaseUserRepository(ABC):
 
     @abstractmethod
     async def add_liked_recipe(self, username: str, recipe_id: str) -> None: ...
+
+    @abstractmethod
+    async def remove_liked_recipe(self, username: str, recipe_id: str) -> None: ...
