@@ -4,10 +4,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from fastapi_proj.application.dependencies import get_mediator
+from fastapi_proj.application.dependencies import get_mediator, get_user
 from fastapi_proj.application.recipies.schemas import (
     QueryRecipesSchema,
-    RecipeLikeSchema,
 )
 from fastapi_proj.application.schemas import CreateRecipeSchema, RecipeResponceSchema
 from fastapi_proj.domain.enteties.component import (
@@ -15,6 +14,7 @@ from fastapi_proj.domain.enteties.component import (
     ComponentCategory,
     Ingredient,
 )
+from fastapi_proj.domain.enteties.user import User
 from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
 from fastapi_proj.logic.comands.recipe import (
     CreateRecipeCommand,
@@ -22,7 +22,6 @@ from fastapi_proj.logic.comands.recipe import (
     GetPopularRecipesCommand,
     GetRecipeByIdCommand,
     LikeRecipeCommand,
-    UnlikeRecipeCommand,
 )
 from fastapi_proj.logic.mediator import Mediator
 
@@ -97,18 +96,8 @@ async def update_recipe(recipe_id: str): ...
 @router.post("/{recipe_id}/like")
 async def like_recipe(
     recipe_id: str,
-    author: RecipeLikeSchema,
+    user: Annotated[User, Depends(get_user)],
     mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
-    command = LikeRecipeCommand(recipe_id, author.author_id)
-    await mediator.handle_command(command)
-
-
-@router.post("/{recipe_id}/unlike")
-async def unlike_recipe(
-    recipe_id: str,
-    author: RecipeLikeSchema,
-    mediator: Annotated[Mediator, Depends(get_mediator)],
-):
-    command = UnlikeRecipeCommand(author.author_id, recipe_id)
+    command = LikeRecipeCommand(recipe_id, user.username)
     await mediator.handle_command(command)

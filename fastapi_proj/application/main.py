@@ -1,13 +1,18 @@
 import logging
 from contextlib import asynccontextmanager
+from logging import getLogger
 
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from fastapi_proj.application.components.handlers import router as component_router
 from fastapi_proj.application.recipies.handlers import router as recipe_router
 from fastapi_proj.application.users.handlers import router as users_router
+from fastapi_proj.config import settings
 from fastapi_proj.domain.exceptions.base import ApplicationException
+
+logger = getLogger(__name__)
 
 
 @asynccontextmanager
@@ -23,6 +28,16 @@ app = FastAPI(
     title="Dish builder",
     description="API that provides info about different dishes and their composition",
     lifespan=lifespan,
+)
+
+logger.debug(settings.CORS_ORIGINS)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

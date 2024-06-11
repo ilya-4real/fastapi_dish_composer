@@ -1,18 +1,26 @@
 from dataclasses import dataclass
+from logging import getLogger
 
+from fastapi_proj.domain.enteties.user import User
 from fastapi_proj.infra.repositories.recipies.mongo import AbstractMongoRepository
 from fastapi_proj.infra.repositories.users.base import BaseUserRepository
+
+logger = getLogger(__name__)
 
 
 @dataclass
 class MongoUserRepository(AbstractMongoRepository, BaseUserRepository):
-    async def create_new(self, username: str) -> None:
-        default_user = {
-            "username": username,
-            "liked_recipes": [],
-            "created_recipes": [],
-        }
-        await self._collection.insert_one(default_user)
+    async def get_or_create_new(self, username: str) -> User:
+        user = await self._collection.find_one({"username": username})
+        if not user:
+            user = {
+                "username": username,
+                "liked_recipes": [],
+                "created_recipes": [],
+            }
+            await self._collection.insert_one(user)
+        del user["_id"]
+        return User(**user)
 
     async def add_created_recipe(self, username: str, recipe_id: str) -> None:
         await self._collection.update_one(
@@ -65,3 +73,11 @@ class MongoUserRepository(AbstractMongoRepository, BaseUserRepository):
             ]
         )
         return await cursor.next()
+
+    async def check_is_recipe_liked(self, username: str, recipe_id: str) -> bool:
+        user = await self._collection.find_one(
+            {"username": username, "liked_recipes": {"recipe_id": recipe_id}}
+        )
+        result = bool(user)
+        logger.debug(result)
+        return bool(user)

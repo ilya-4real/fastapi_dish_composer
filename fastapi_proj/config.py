@@ -3,11 +3,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file="fastapi_proj/../.env",
+        extra="ignore",
+    )
     MONGO_USERNAME: str
     MONGO_PASSWORD: str
     MONGO_PORT: int
     MONGO_HOST: str
+    CORS_ORIGINS: list[str]
     mongo_component_collection: str = Field(
         default="components", alias="MONGO_COMP_COLL"
     )

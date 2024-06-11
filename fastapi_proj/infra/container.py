@@ -40,12 +40,10 @@ from fastapi_proj.logic.comands.recipe import (
     GetRecipeByIdHandler,
     LikeRecipeCommand,
     LikeRecipeHandler,
-    UnlikeRecipeCommand,
-    UnlikeRecipeHandler,
 )
 from fastapi_proj.logic.comands.users import (
-    CreateUserCommand,
-    CreateUserHandler,
+    GetOrCreateUserCommand,
+    GetOrCreateUserHandler,
     GetUserCreatedRecipesCommand,
     GetUserCreatedRecipesHandler,
     GetUserLikedRecipesCommand,
@@ -157,8 +155,8 @@ def _init_container() -> Container:
         )
 
         mediator.register_command(
-            CreateUserCommand,
-            [CreateUserHandler(container.resolve(BaseUserRepository))],  # type: ignore
+            GetOrCreateUserCommand,
+            [GetOrCreateUserHandler(container.resolve(BaseUserRepository))],  # type: ignore
         )
 
         mediator.register_command(
@@ -181,15 +179,6 @@ def _init_container() -> Container:
             [
                 LikeRecipeHandler(
                     container.resolve(BaseRecipeRepository),  # type:ignore
-                    container.resolve(BaseUserRepository),  # type: ignore
-                )
-            ],
-        )
-        mediator.register_command(
-            UnlikeRecipeCommand,
-            [
-                UnlikeRecipeHandler(
-                    container.resolve(BaseRecipeRepository),  # type: ignore
                     container.resolve(BaseUserRepository),  # type: ignore
                 )
             ],

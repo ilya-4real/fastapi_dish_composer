@@ -93,28 +93,19 @@ class LikeRecipeHandler(BaseCommandHandler[LikeRecipeCommand, None]):
     user_repository: BaseUserRepository
 
     async def handle(self, command: LikeRecipeCommand) -> None:
-        await self.recipe_repository.increase_likes(command.recipe_id)
-        await self.user_repository.add_liked_recipe(
+        is_liked = await self.user_repository.check_is_recipe_liked(
             command.author_id, command.recipe_id
         )
-
-
-@dataclass(frozen=True)
-class UnlikeRecipeCommand(BaseCommand):
-    username: str
-    recipe_id: str
-
-
-@dataclass
-class UnlikeRecipeHandler(BaseCommandHandler[UnlikeRecipeCommand, None]):
-    recipe_repository: BaseRecipeRepository
-    user_repository: BaseUserRepository
-
-    async def handle(self, command: UnlikeRecipeCommand) -> None:
-        await self.user_repository.remove_liked_recipe(
-            command.username, command.recipe_id
-        )
-        await self.recipe_repository.decrease_likes(command.recipe_id)
+        if is_liked:
+            await self.user_repository.remove_liked_recipe(
+                command.author_id, command.recipe_id
+            )
+            await self.recipe_repository.decrease_likes(command.recipe_id)
+        else:
+            await self.recipe_repository.increase_likes(command.recipe_id)
+            await self.user_repository.add_liked_recipe(
+                command.author_id, command.recipe_id
+            )
 
 
 @dataclass(frozen=True)
