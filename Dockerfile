@@ -1,15 +1,25 @@
-FROM python:3.12
+FROM python:3.12.1-slim-bullseye as builder
 
-WORKDIR /code
-RUN pip install poetry
+COPY poetry.lock pyproject.toml ./
 
-COPY poetry.lock /code
-COPY pyproject.toml /code
+RUN python -m pip install poetry==1.8.2 && \
+	poetry export -o requirements.prod.txt --without-hashes
 
-RUN poetry config virtualenvs.create false
-RUN poetry install
+FROM python:3.12.1-slim-bullseye as prod
 
-COPY . /code
+WORKDIR /fastapi_proj
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-CMD uvicorn main:app --host 0.0.0.0 --port 80
+COPY --from=builder requirements.prod.txt /fastapi_proj
+
+RUN apt update -y && \
+	apt install -y python3-dev \
+	gcc \
+	musl-dev && \
+	pip install --upgrade pip && pip install --no-cache-dir -r requirements.prod.txt
+
+COPY . /fastapi_proj/
+
+CMD gunicorn fastapi_proj.application.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
