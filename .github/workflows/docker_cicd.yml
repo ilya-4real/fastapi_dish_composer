@@ -26,7 +26,7 @@ jobs:
         with:
           host: ${{ secrets.HOST_IP }}
           username: ${{ secrets.HOST_USERS }}
-          key: ${{ secrets.SSH_KEY }}
+          key: ${{ secrets.HOST_KEY }}
           port: 22
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend
