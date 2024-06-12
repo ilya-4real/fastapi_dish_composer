@@ -5,6 +5,6 @@ env
 .vscode
 example.py
 .pytest_cache
-logs/
+**.log
 
 .ruff_cache
