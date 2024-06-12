@@ -1,0 +1,34 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend
+    - name: login docker
+      run: docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
+    - name: push image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
+
+  deliver-n-deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deliver via ssh
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.HOST_USERS }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend
+            sudo docker stop recipe_backend && sudo docker rm recipe_backend
+            sudo docker run --name recipe_backend -p 7000:8000 -d -e MONGO_PORT=${{secrets.MONGO_PORT}} -e MONGO_HOST=${{ secrets.MONGO_HOST }} -e MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -e CORS_ORIGINS=${{ secrets.CORS_ORIGINS }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend
