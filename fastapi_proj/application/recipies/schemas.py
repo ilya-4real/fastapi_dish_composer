@@ -14,5 +14,15 @@ class QueryRecipeSchema(BaseModel):
     likes: int
 
 
+class SearchRecipeSchema(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    oid: str
+    title: str
+
+
 class QueryRecipesSchema(BaseModel):
     recipes: list[QueryRecipeSchema]
+
+
+class SearchRecipesSchema(BaseModel):
+    recipes: list[SearchRecipeSchema]

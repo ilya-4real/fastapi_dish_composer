@@ -1,3 +1,4 @@
+import re
 from abc import ABC
 from dataclasses import dataclass
 from logging import getLogger
@@ -129,3 +130,10 @@ class MongoRecipeRepository(BaseRecipeRepository, AbstractMongoRepository):
         result = [item async for item in cursor]
         logger.debug(result)
         return result
+
+    async def search_for_recipe(self, q: str) -> list[dict] | None:
+        regex = re.compile(f"^{q}", re.IGNORECASE)
+        cursor = self._collection.find(
+            {"title": regex}, {"_id": 0, "oid": 1, "title": 1}
+        )
+        return [i async for i in cursor]
