@@ -8,10 +8,18 @@ from fastapi_proj.domain.enteties.user import User
 from fastapi_proj.infra.container import init_container
 from fastapi_proj.logic.comands.users import GetOrCreateUserCommand
 from fastapi_proj.logic.mediator import Mediator
+from fastapi_proj.logic.querymediator import QueryMediator
 
 
 def get_mediator(container: Annotated[Container, Depends(init_container)]) -> Mediator:
     mediator: Mediator = container.resolve(Mediator)  # type: ignore
+    return mediator
+
+
+def get_query_mediator(
+    container: Annotated[Container, Depends(init_container)],
+) -> QueryMediator:
+    mediator: QueryMediator = container.resolve(QueryMediator)  # type: ignore
     return mediator
 
 

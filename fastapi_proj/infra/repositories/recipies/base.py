@@ -24,6 +24,9 @@ class BaseRecipeRepository(ABC):
     @abstractmethod
     async def get_popular_recipes(self, limit: int, offset: int) -> list: ...
 
+    @abstractmethod
+    async def search_for_recipe(self, q: str) -> list[dict] | None: ...
+
 
 @dataclass
 class BaseComponentRepository(ABC):
