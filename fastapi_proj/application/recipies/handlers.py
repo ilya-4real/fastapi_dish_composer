@@ -94,13 +94,19 @@ async def generate_random_recipe(
     return RecipeResponceSchema.model_validate(result)
 
 
-@router.get("/{recipe_id}")
+@router.get(
+    "/{recipe_id}",
+    responses={200: {"model": RecipeResponceSchema}, 404: {"model": None}},
+)
 async def get_recipe_detail(
-    recipe_id: str, mediator: Annotated[Mediator, Depends(get_mediator)]
+    user: Annotated[User, Depends(get_user)],
+    recipe_id: str,
+    mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
-    command = GetRecipeByIdCommand(recipe_id)
+    command = GetRecipeByIdCommand(user.username, recipe_id)
     result, *_ = await mediator.handle_command(command)
-    pprint(result)
+    if not result:
+        return Response(None, 404)
     return RecipeResponceSchema.model_validate(result)
 
 

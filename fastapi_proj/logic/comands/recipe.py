@@ -70,15 +70,23 @@ class CreateRecipeHandler(BaseCommandHandler[CreateRecipeCommand, None]):
 
 @dataclass(frozen=True)
 class GetRecipeByIdCommand(BaseCommand):
+    username: str
     recipe_id: str
 
 
 @dataclass
 class GetRecipeByIdHandler(BaseCommandHandler[GetRecipeByIdCommand, dict | None]):
+    user_repository: BaseUserRepository
     recipe_repository: BaseRecipeRepository
 
     async def handle(self, command: GetRecipeByIdCommand) -> dict | None:
-        return await self.recipe_repository.get_by_id(command.recipe_id)
+        is_liked = await self.user_repository.check_is_recipe_liked(
+            command.username, command.recipe_id
+        )
+        result = await self.recipe_repository.get_by_id(command.recipe_id)
+        if result:
+            result["is_liked"] = is_liked
+        return result
 
 
 @dataclass(frozen=True)
