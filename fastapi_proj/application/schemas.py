@@ -20,6 +20,7 @@ class CreateRecipeSchema(BaseModel):
 
 class RecipeResponceSchema(CreateRecipeSchema):
     model_config = ConfigDict(extra="ignore")
+    is_liked: bool = False
     oid: str | None = None
     likes: int
 

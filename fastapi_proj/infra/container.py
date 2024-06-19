@@ -173,7 +173,12 @@ def _init_container() -> Container:
 
         mediator.register_command(
             GetRecipeByIdCommand,
-            [GetRecipeByIdHandler(container.resolve(BaseRecipeRepository))],  # type: ignore
+            [
+                GetRecipeByIdHandler(
+                    container.resolve(BaseUserRepository),  # type: ignore
+                    container.resolve(BaseRecipeRepository),  # type: ignore
+                )
+            ],
         )
 
         mediator.register_command(
