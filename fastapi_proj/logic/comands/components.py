@@ -31,8 +31,8 @@ class GetComponentsByCategory(BaseCommand):
 
 
 @dataclass(frozen=True)
-class GetComponentByTitleCommand(BaseCommand):
-    title: CommonTitle
+class GetComponentByIdCommand(BaseCommand):
+    recipe_id: str
 
 
 @dataclass(frozen=True)
@@ -76,11 +76,11 @@ class GetComponentsByCategoryHandler(
 
 
 @dataclass
-class GetComponentByTitleHandler(BaseCommandHandler[GetComponentByTitleCommand, dict]):
+class GetComponentByIdHandler(BaseCommandHandler[GetComponentByIdCommand, dict]):
     component_repository: BaseComponentRepository
 
-    async def handle(self, command: GetComponentByTitleCommand) -> dict:
-        return await self.component_repository.get_component_by_title(command.title)
+    async def handle(self, command: GetComponentByIdCommand) -> dict:
+        return await self.component_repository.get_component_by_id(command.recipe_id)
 
 
 @dataclass

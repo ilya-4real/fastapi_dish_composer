@@ -20,8 +20,8 @@ from fastapi_proj.logic.comands.components import (
     CreateComponentCommandHandler,
     DeleteComponentByTitleCommand,
     DeleteComponentByTitleHandler,
-    GetComponentByTitleCommand,
-    GetComponentByTitleHandler,
+    GetComponentByIdCommand,
+    GetComponentByIdHandler,
     GetComponentsByCategory,
     GetComponentsByCategoryHandler,
     GetRandomComponentInCategoryCommand,
@@ -123,9 +123,9 @@ def _init_container() -> Container:
         )
 
         mediator.register_command(
-            GetComponentByTitleCommand,
+            GetComponentByIdCommand,
             [
-                GetComponentByTitleHandler(
+                GetComponentByIdHandler(
                     container.resolve(BaseComponentRepository)  # type: ignore
                 )
             ],

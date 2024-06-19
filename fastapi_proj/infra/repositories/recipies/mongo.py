@@ -69,8 +69,8 @@ class MongoComponentRepository(BaseComponentRepository, AbstractMongoRepository)
         )
         return await cursor.next()
 
-    async def get_component_by_title(self, title: CommonTitle) -> dict:
-        result = await self._collection.find_one(filter={"title": title.as_generic()})
+    async def get_component_by_id(self, recipe_id: str) -> dict:
+        result = await self._collection.find_one(filter={"oid": recipe_id})
         logger.debug(result)
         return result  # type: ignore
 

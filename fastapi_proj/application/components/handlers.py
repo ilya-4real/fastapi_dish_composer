@@ -18,7 +18,7 @@ from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
 from fastapi_proj.logic.comands.components import (
     CreateComponentCommand,
     DeleteComponentByTitleCommand,
-    GetComponentByTitleCommand,
+    GetComponentByIdCommand,
     GetComponentsByCategory,
     GetRandomComponentInCategoryCommand,
     UpdateComponentByTitleCommand,
@@ -70,14 +70,14 @@ async def get_one_random_component_in_category(
 
 
 @router.get(
-    "/{component_title}",
+    "/{component_id}",
     responses={404: {"model": None}, 200: {"model": ComponentResponceSchema}},
 )
 async def get_one_component_by_title(
-    component_title: str,
+    component_id: str,
     mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
-    command = GetComponentByTitleCommand(CommonTitle(component_title))
+    command = GetComponentByIdCommand(component_id)
     result, *_ = await mediator.handle_command(command)
     logger.debug(result)
     if not result:
