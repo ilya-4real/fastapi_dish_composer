@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    debug=True,
+    debug=False,
     title="Dish builder",
     description="API that provides info about different dishes and their composition",
     lifespan=lifespan,
