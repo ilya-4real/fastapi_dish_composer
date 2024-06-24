@@ -9,7 +9,7 @@ from fastapi_proj.application.components.schemas import (
     ListOfComponentsResponceSchema,
     UpdateComponentSchema,
 )
-from fastapi_proj.application.dependencies import get_mediator
+from fastapi_proj.application.dependencies import get_mediator, get_query_mediator
 from fastapi_proj.domain.enteties.component import (
     ComponentCategory,
     Ingredient,
@@ -18,12 +18,15 @@ from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
 from fastapi_proj.logic.comands.components import (
     CreateComponentCommand,
     DeleteComponentByTitleCommand,
-    GetComponentByIdCommand,
     GetComponentsByCategory,
-    GetRandomComponentInCategoryCommand,
     UpdateComponentByTitleCommand,
 )
 from fastapi_proj.logic.mediator import Mediator
+from fastapi_proj.logic.queries.components import (
+    GetRandomComponentInCategoryQuery,
+    QueryComponentById,
+)
+from fastapi_proj.logic.querymediator import QueryMediator
 
 router = APIRouter(prefix="/components", tags=["components"])
 
@@ -62,10 +65,10 @@ async def get_components_by_category(
 @router.get("/random", response_model=ComponentResponceSchema)
 async def get_one_random_component_in_category(
     category: ComponentCategory,
-    mediator: Annotated[Mediator, Depends(get_mediator)],
+    query_mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
 ):
-    command = GetRandomComponentInCategoryCommand(category)
-    result, *_ = await mediator.handle_command(command)
+    query = GetRandomComponentInCategoryQuery(category)
+    result = await query_mediator.handle_query(query)
     return result
 
 
@@ -75,29 +78,29 @@ async def get_one_random_component_in_category(
 )
 async def get_one_component_by_title(
     component_id: str,
-    mediator: Annotated[Mediator, Depends(get_mediator)],
+    mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
 ):
-    command = GetComponentByIdCommand(component_id)
-    result, *_ = await mediator.handle_command(command)
+    query = QueryComponentById(component_id)
+    result = await mediator.handle_query(query)
     logger.debug(result)
     if not result:
         return Response(status_code=404)
     return ComponentResponceSchema.model_validate(result)
 
 
-@router.delete("/{component_title}", responses={204: {"model": None}})
+@router.delete("/{component_id}", responses={204: {"model": None}})
 async def delete_component_by_title(
-    component_title: str,
+    component_id: str,
     mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
-    command = DeleteComponentByTitleCommand(CommonTitle(component_title))
+    command = DeleteComponentByTitleCommand(component_id)
     result, *_ = await mediator.handle_command(command)
     return Response(status_code=204)
 
 
-@router.put("/{component_title}")
+@router.put("/{component_id}")
 async def update_ingredients(
-    component_title: str,
+    component_id: str,
     category: ComponentCategory,
     component: UpdateComponentSchema,
     mediator: Annotated[Mediator, Depends(get_mediator)],
@@ -107,7 +110,7 @@ async def update_ingredients(
         for ingredient in component.ingredients
     ]
     command = UpdateComponentByTitleCommand(
-        CommonTitle(component_title), category, ingredients
+        CommonTitle(component_id), category, ingredients
     )
 
     result, *_ = await mediator.handle_command(command)

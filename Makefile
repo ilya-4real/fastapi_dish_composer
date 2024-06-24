@@ -12,3 +12,8 @@ storages:
 storages-down: 
 	${DC} -f ${STORAGES_FILE} down
 
+.PHONY: app-dev
+app-dev: 
+	uvicorn fastapi_proj.application.main:app --reload
+
+
