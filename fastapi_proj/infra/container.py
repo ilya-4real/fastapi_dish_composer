@@ -40,10 +40,6 @@ from fastapi_proj.logic.comands.recipe import (
 from fastapi_proj.logic.comands.users import (
     GetOrCreateUserCommand,
     GetOrCreateUserHandler,
-    GetUserCreatedRecipesCommand,
-    GetUserCreatedRecipesHandler,
-    GetUserLikedRecipesCommand,
-    GetUserLikedRecipesHandler,
 )
 from fastapi_proj.logic.mediator import Mediator
 from fastapi_proj.logic.queries.components import (
@@ -53,6 +49,12 @@ from fastapi_proj.logic.queries.components import (
     QueryComponentHandler,
 )
 from fastapi_proj.logic.queries.recipes import SearchQuery, SearchQueryHandler
+from fastapi_proj.logic.queries.users import (
+    GetUserCreatedRecipesHandler,
+    GetUserCreatedRecipesQuery,
+    GetUserLikedRecipesHandler,
+    GetUserLikedRecipesQuery,
+)
 from fastapi_proj.logic.querymediator import QueryMediator
 
 logger = logging.getLogger(__name__)
@@ -186,16 +188,6 @@ def _init_container() -> Container:
             GenerateRandomRecipeCommand,
             [GenerateRandomRecipeHandler(container.resolve(BaseComponentRepository))],  # type: ignore
         )
-
-        mediator.register_command(
-            GetUserCreatedRecipesCommand,
-            [GetUserCreatedRecipesHandler(container.resolve(BaseUserRepository))],  # type: ignore
-        )
-
-        mediator.register_command(
-            GetUserLikedRecipesCommand,
-            [GetUserLikedRecipesHandler(container.resolve(BaseUserRepository))],  # type: ignore
-        )
         return mediator
 
     def init_query_mediator():
@@ -216,6 +208,16 @@ def _init_container() -> Container:
         query_mediator.register_handler(
             SearchQuery,
             SearchQueryHandler(container.resolve(BaseRecipeRepository)),  # type:ignore
+        )
+
+        query_mediator.register_handler(
+            GetUserCreatedRecipesQuery,
+            GetUserCreatedRecipesHandler(container.resolve(BaseUserRepository)),  # type: ignore
+        )
+
+        query_mediator.register_handler(
+            GetUserLikedRecipesQuery,
+            GetUserLikedRecipesHandler(container.resolve(BaseUserRepository)),  # type: ignore
         )
         return query_mediator
 

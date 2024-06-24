@@ -1,5 +1,4 @@
 from logging import getLogger
-from pprint import pprint
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response
@@ -58,7 +57,6 @@ async def create_recipe(
         recipe.title, recipe.author, recipe.description or "", components
     )
     await mediator.handle_command(command)
-    print(recipe)
 
 
 @router.get("/popular")
@@ -90,7 +88,6 @@ async def generate_random_recipe(
 ):
     command = GenerateRandomRecipeCommand()
     result, *_ = await mediator.handle_command(command)
-    pprint(result)
     return RecipeResponceSchema.model_validate(result)
 
 
