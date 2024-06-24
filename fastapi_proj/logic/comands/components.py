@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from logging import getLogger
-from typing import Any
 
 from fastapi_proj.domain.enteties.component import (
     Component,
@@ -31,18 +30,8 @@ class GetComponentsByCategory(BaseCommand):
 
 
 @dataclass(frozen=True)
-class GetComponentByIdCommand(BaseCommand):
-    recipe_id: str
-
-
-@dataclass(frozen=True)
-class GetRandomComponentInCategoryCommand(BaseCommand):
-    category: ComponentCategory
-
-
-@dataclass(frozen=True)
 class DeleteComponentByTitleCommand(BaseCommand):
-    title: CommonTitle
+    oid: str
 
 
 @dataclass(frozen=True)
@@ -76,35 +65,13 @@ class GetComponentsByCategoryHandler(
 
 
 @dataclass
-class GetComponentByIdHandler(BaseCommandHandler[GetComponentByIdCommand, dict]):
-    component_repository: BaseComponentRepository
-
-    async def handle(self, command: GetComponentByIdCommand) -> dict:
-        return await self.component_repository.get_component_by_id(command.recipe_id)
-
-
-@dataclass
-class GetRandomComponentInCategoryHandler(
-    BaseCommandHandler[GetRandomComponentInCategoryCommand, dict[str, Any]]
-):
-    component_repository: BaseComponentRepository
-
-    async def handle(
-        self, command: GetRandomComponentInCategoryCommand
-    ) -> dict[str, Any]:
-        return await self.component_repository.get_random_component_by_category(
-            command.category
-        )
-
-
-@dataclass
 class DeleteComponentByTitleHandler(
     BaseCommandHandler[DeleteComponentByTitleCommand, None]
 ):
     component_repository: BaseComponentRepository
 
     async def handle(self, command: DeleteComponentByTitleCommand) -> None:
-        return await self.component_repository.delete_by_title(command.title)
+        return await self.component_repository.delete_by_id(command.oid)
 
 
 @dataclass

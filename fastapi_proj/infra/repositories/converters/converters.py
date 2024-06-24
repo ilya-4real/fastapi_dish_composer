@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi_proj.domain.enteties.component import Component
+from fastapi_proj.domain.enteties.component import Component, Ingredient
 from fastapi_proj.domain.enteties.recipe import Recipe
 
 
@@ -37,3 +37,12 @@ def convert_recipe_to_document(recipe: Recipe) -> dict:
             convert_component_from_entity_to_document(component)
         )
     return document
+
+
+def convert_ingredients_to_list_of_dicts(
+    ingredients: list[Ingredient],
+) -> list[dict[str, Any]]:
+    return [
+        {"title": i.title.as_generic(), "amount": i.amount.as_generic()}
+        for i in ingredients
+    ]

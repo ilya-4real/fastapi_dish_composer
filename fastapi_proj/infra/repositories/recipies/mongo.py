@@ -12,9 +12,9 @@ from fastapi_proj.domain.enteties.recipe import Recipe
 from fastapi_proj.domain.exceptions.ingredients import (
     DuplicateComponentException,
 )
-from fastapi_proj.domain.values.components import CommonTitle
 from fastapi_proj.infra.repositories.converters.converters import (
     convert_component_from_entity_to_document,
+    convert_ingredients_to_list_of_dicts,
     convert_recipe_to_document,
 )
 from fastapi_proj.infra.repositories.recipies.base import (
@@ -74,14 +74,11 @@ class MongoComponentRepository(BaseComponentRepository, AbstractMongoRepository)
         logger.debug(result)
         return result  # type: ignore
 
-    async def delete_by_title(self, title: CommonTitle) -> None:
-        await self._collection.delete_one(filter={"title": title.as_generic()})
+    async def delete_by_id(self, oid: str) -> None:
+        await self._collection.delete_one(filter={"oid": oid})
 
     async def update_one_component_ingredients(self, component: Component) -> None:
-        ingredients = [
-            {"title": i.title.as_generic(), "amount": i.amount.as_generic()}
-            for i in component.ingredients
-        ]
+        ingredients = convert_ingredients_to_list_of_dicts(component.ingredients)
         logger.debug(ingredients)
         await self._collection.update_one(
             {"title": component.title.as_generic()},

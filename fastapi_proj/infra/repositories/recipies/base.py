@@ -4,7 +4,6 @@ from typing import Any
 
 from fastapi_proj.domain.enteties.component import Component, ComponentCategory
 from fastapi_proj.domain.enteties.recipe import Recipe
-from fastapi_proj.domain.values.components import CommonTitle
 
 
 @dataclass(eq=False)
@@ -47,7 +46,7 @@ class BaseComponentRepository(ABC):
     async def get_component_by_id(self, title: str) -> dict: ...
 
     @abstractmethod
-    async def delete_by_title(self, recipe_id: CommonTitle) -> None: ...
+    async def delete_by_id(self, recipe_id: str) -> None: ...
 
     @abstractmethod
     async def update_one_component_ingredients(self, component: Component) -> None: ...

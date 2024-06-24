@@ -20,12 +20,8 @@ from fastapi_proj.logic.comands.components import (
     CreateComponentCommandHandler,
     DeleteComponentByTitleCommand,
     DeleteComponentByTitleHandler,
-    GetComponentByIdCommand,
-    GetComponentByIdHandler,
     GetComponentsByCategory,
     GetComponentsByCategoryHandler,
-    GetRandomComponentInCategoryCommand,
-    GetRandomComponentInCategoryHandler,
     UpdateComponentByTitleCommand,
     UpdateComponentByTitleHandler,
 )
@@ -50,6 +46,12 @@ from fastapi_proj.logic.comands.users import (
     GetUserLikedRecipesHandler,
 )
 from fastapi_proj.logic.mediator import Mediator
+from fastapi_proj.logic.queries.components import (
+    GetRandomComponentInCategoryHandler,
+    GetRandomComponentInCategoryQuery,
+    QueryComponentById,
+    QueryComponentHandler,
+)
 from fastapi_proj.logic.queries.recipes import SearchQuery, SearchQueryHandler
 from fastapi_proj.logic.querymediator import QueryMediator
 
@@ -117,23 +119,6 @@ def _init_container() -> Container:
             GetComponentsByCategory,
             [
                 GetComponentsByCategoryHandler(
-                    container.resolve(BaseComponentRepository)  # type: ignore
-                )
-            ],
-        )
-
-        mediator.register_command(
-            GetComponentByIdCommand,
-            [
-                GetComponentByIdHandler(
-                    container.resolve(BaseComponentRepository)  # type: ignore
-                )
-            ],
-        )
-        mediator.register_command(
-            GetRandomComponentInCategoryCommand,
-            [
-                GetRandomComponentInCategoryHandler(
                     container.resolve(BaseComponentRepository)  # type: ignore
                 )
             ],
@@ -215,6 +200,18 @@ def _init_container() -> Container:
 
     def init_query_mediator():
         query_mediator = QueryMediator()
+
+        query_mediator.register_handler(
+            QueryComponentById,
+            QueryComponentHandler(container.resolve(BaseComponentRepository)),  # type: ignore
+        )
+
+        query_mediator.register_handler(
+            GetRandomComponentInCategoryQuery,
+            GetRandomComponentInCategoryHandler(
+                container.resolve(BaseComponentRepository)  # type: ignore
+            ),
+        )
 
         query_mediator.register_handler(
             SearchQuery,
