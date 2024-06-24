@@ -23,12 +23,14 @@ from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
 from fastapi_proj.logic.comands.recipe import (
     CreateRecipeCommand,
     GenerateRandomRecipeCommand,
-    GetPopularRecipesCommand,
-    GetRecipeByIdCommand,
     LikeRecipeCommand,
 )
 from fastapi_proj.logic.mediator import Mediator
-from fastapi_proj.logic.queries.recipes import SearchQuery
+from fastapi_proj.logic.queries.recipes import (
+    GetPopularRecipesQuery,
+    GetRecipeByIdQuery,
+    SearchQuery,
+)
 from fastapi_proj.logic.querymediator import QueryMediator
 
 logger = getLogger(__name__)
@@ -61,12 +63,12 @@ async def create_recipe(
 
 @router.get("/popular")
 async def get_popular_recipes(
-    mediator: Annotated[Mediator, Depends(get_mediator)],
+    mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
     limit: int = 10,
     offset: int = 0,
 ):
-    command = GetPopularRecipesCommand(limit, offset)
-    result, *_ = await mediator.handle_command(command)
+    command = GetPopularRecipesQuery(limit, offset)
+    result = await mediator.handle_query(command)
     return QueryRecipesSchema.model_validate({"recipes": result})
 
 
@@ -98,10 +100,10 @@ async def generate_random_recipe(
 async def get_recipe_detail(
     user: Annotated[User, Depends(get_user)],
     recipe_id: str,
-    mediator: Annotated[Mediator, Depends(get_mediator)],
+    mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
 ):
-    command = GetRecipeByIdCommand(user.username, recipe_id)
-    result, *_ = await mediator.handle_command(command)
+    command = GetRecipeByIdQuery(user.username, recipe_id)
+    result = await mediator.handle_query(command)
     if not result:
         return Response(None, 404)
     return RecipeResponceSchema.model_validate(result)
