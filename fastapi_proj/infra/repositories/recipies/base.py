@@ -26,6 +26,9 @@ class BaseRecipeRepository(ABC):
     @abstractmethod
     async def search_for_recipe(self, q: str) -> list[dict] | None: ...
 
+    @abstractmethod
+    async def update_one(self, recipe: Recipe) -> None: ...
+
 
 @dataclass
 class BaseComponentRepository(ABC):

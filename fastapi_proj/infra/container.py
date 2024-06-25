@@ -32,6 +32,8 @@ from fastapi_proj.logic.comands.recipe import (
     GenerateRandomRecipeHandler,
     LikeRecipeCommand,
     LikeRecipeHandler,
+    UpdateRecipeCommand,
+    UpdateRecipeHandler,
 )
 from fastapi_proj.logic.comands.users import (
     GetOrCreateUserCommand,
@@ -174,6 +176,15 @@ def _init_container() -> Container:
         mediator.register_command(
             GenerateRandomRecipeCommand,
             [GenerateRandomRecipeHandler(container.resolve(BaseComponentRepository))],  # type: ignore
+        )
+        mediator.register_command(
+            UpdateRecipeCommand,
+            [
+                UpdateRecipeHandler(
+                    container.resolve(BaseUserRepository),  # type: ignore
+                    container.resolve(BaseRecipeRepository),  # type: ignore
+                )
+            ],
         )
         return mediator
 

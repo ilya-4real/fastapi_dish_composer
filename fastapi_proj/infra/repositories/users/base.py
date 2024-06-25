@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from fastapi_proj.domain.enteties.recipe import Recipe
 from fastapi_proj.domain.enteties.user import User
 
 
@@ -24,3 +25,7 @@ class BaseUserRepository(ABC):
 
     @abstractmethod
     async def check_is_recipe_liked(self, username: str, recipe_id: str) -> bool: ...
+    @abstractmethod
+    async def check_is_author_of_recipe(
+        self, username: str, recipe: Recipe
+    ) -> bool: ...

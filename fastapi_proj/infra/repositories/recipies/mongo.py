@@ -130,7 +130,13 @@ class MongoRecipeRepository(BaseRecipeRepository, AbstractMongoRepository):
 
     async def search_for_recipe(self, q: str) -> list[dict] | None:
         regex = re.compile(f"^{q}", re.IGNORECASE)
-        cursor = self._collection.find(
-            {"title": regex}, {"_id": 0, "oid": 1, "title": 1}
+        cursor = (
+            self._collection.find({"title": regex}, {"_id": 0, "oid": 1, "title": 1})
+            .limit(10)
+            .skip(0)
         )
         return [i async for i in cursor]
+
+    async def update_one(self, recipe: Recipe) -> None:
+        document = convert_recipe_to_document(recipe)
+        await self._collection.update_one({"oid": recipe.oid}, {"$set": document})

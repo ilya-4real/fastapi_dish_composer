@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from logging import getLogger
+from typing import Any
 
 from fastapi_proj.domain.enteties.component import Component, ComponentCategory
 from fastapi_proj.domain.enteties.recipe import Recipe
@@ -9,6 +10,8 @@ from fastapi_proj.infra.repositories.recipies.base import (
 )
 from fastapi_proj.infra.repositories.users.base import BaseUserRepository
 from fastapi_proj.logic.comands.base import BaseCommand, BaseCommandHandler
+from fastapi_proj.logic.converters.recipes import convert_dict_to_components
+from fastapi_proj.logic.exceptions.base import UserCannotUpdateRecipe
 
 logger = getLogger(__name__)
 
@@ -93,3 +96,33 @@ class LikeRecipeHandler(BaseCommandHandler[LikeRecipeCommand, None]):
             await self.user_repository.add_liked_recipe(
                 command.author_id, command.recipe_id
             )
+
+
+@dataclass(frozen=True)
+class UpdateRecipeCommand(BaseCommand):
+    author: str
+    recipe_id: str
+    title: str
+    description: str
+    components: list[dict[str, Any]]
+
+
+@dataclass
+class UpdateRecipeHandler(BaseCommandHandler[UpdateRecipeCommand, None]):
+    user_repository: BaseUserRepository
+    recipe_repository: BaseRecipeRepository
+
+    async def handle(self, command: UpdateRecipeCommand) -> None:
+        components = convert_dict_to_components(command.components)
+        logger.debug(components)
+        recipe = Recipe(
+            author=command.author,
+            title=command.title,
+            description=command.description,
+            components=components,
+            oid=command.recipe_id,
+        )
+        if await self.user_repository.check_is_author_of_recipe(command.author, recipe):
+            await self.recipe_repository.update_one(recipe)
+        else:
+            raise UserCannotUpdateRecipe(403, "User can not edit this recipe")

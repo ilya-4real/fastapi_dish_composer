@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from logging import getLogger
 
+from fastapi_proj.domain.enteties.recipe import Recipe
 from fastapi_proj.domain.enteties.user import User
 from fastapi_proj.infra.repositories.recipies.mongo import AbstractMongoRepository
 from fastapi_proj.infra.repositories.users.base import BaseUserRepository
@@ -80,4 +81,10 @@ class MongoUserRepository(AbstractMongoRepository, BaseUserRepository):
         )
         result = bool(user)
         logger.debug(result)
+        return bool(user)
+
+    async def check_is_author_of_recipe(self, username: str, recipe: Recipe) -> bool:
+        user = await self._collection.find_one(
+            {"username": username, "created_recipes": {"recipe_id": recipe.oid}}
+        )
         return bool(user)

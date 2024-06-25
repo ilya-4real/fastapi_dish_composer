@@ -6,7 +6,7 @@ class Ingredient(BaseModel):
     amount: int = Field(gt=1)
 
 
-class Compnent(BaseModel):
+class Component(BaseModel):
     title: str = Field(min_length=2)
     ingredients: list[Ingredient]
 
@@ -15,7 +15,13 @@ class CreateRecipeSchema(BaseModel):
     author: str = Field(min_length=2)
     title: str = Field(min_length=2, max_length=100)
     description: str
-    components: list[Compnent]
+    components: list[Component]
+
+
+class UpdateRecipeSchema(BaseModel):
+    title: str = Field(min_length=2)
+    description: str
+    components: list[Component]
 
 
 class RecipeResponceSchema(CreateRecipeSchema):
