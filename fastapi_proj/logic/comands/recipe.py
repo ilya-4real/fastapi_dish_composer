@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from logging import getLogger
+from typing import Any
 
 from fastapi_proj.domain.enteties.component import Component, ComponentCategory
 from fastapi_proj.domain.enteties.recipe import Recipe
@@ -9,6 +10,8 @@ from fastapi_proj.infra.repositories.recipies.base import (
 )
 from fastapi_proj.infra.repositories.users.base import BaseUserRepository
 from fastapi_proj.logic.comands.base import BaseCommand, BaseCommandHandler
+from fastapi_proj.logic.converters.recipes import convert_dict_to_components
+from fastapi_proj.logic.exceptions.base import UserCannotUpdateRecipe
 
 logger = getLogger(__name__)
 
@@ -69,27 +72,6 @@ class CreateRecipeHandler(BaseCommandHandler[CreateRecipeCommand, None]):
 
 
 @dataclass(frozen=True)
-class GetRecipeByIdCommand(BaseCommand):
-    username: str
-    recipe_id: str
-
-
-@dataclass
-class GetRecipeByIdHandler(BaseCommandHandler[GetRecipeByIdCommand, dict | None]):
-    user_repository: BaseUserRepository
-    recipe_repository: BaseRecipeRepository
-
-    async def handle(self, command: GetRecipeByIdCommand) -> dict | None:
-        is_liked = await self.user_repository.check_is_recipe_liked(
-            command.username, command.recipe_id
-        )
-        result = await self.recipe_repository.get_by_id(command.recipe_id)
-        if result:
-            result["is_liked"] = is_liked
-        return result
-
-
-@dataclass(frozen=True)
 class LikeRecipeCommand(BaseCommand):
     recipe_id: str
     author_id: str
@@ -117,16 +99,30 @@ class LikeRecipeHandler(BaseCommandHandler[LikeRecipeCommand, None]):
 
 
 @dataclass(frozen=True)
-class GetPopularRecipesCommand(BaseCommand):
-    limit: int
-    offset: int
+class UpdateRecipeCommand(BaseCommand):
+    author: str
+    recipe_id: str
+    title: str
+    description: str
+    components: list[dict[str, Any]]
 
 
 @dataclass
-class GetPopularRecipesHandler(BaseCommandHandler[GetPopularRecipesCommand, list]):
+class UpdateRecipeHandler(BaseCommandHandler[UpdateRecipeCommand, None]):
+    user_repository: BaseUserRepository
     recipe_repository: BaseRecipeRepository
 
-    async def handle(self, command: GetPopularRecipesCommand) -> list:
-        return await self.recipe_repository.get_popular_recipes(
-            command.limit, command.offset
+    async def handle(self, command: UpdateRecipeCommand) -> None:
+        components = convert_dict_to_components(command.components)
+        logger.debug(components)
+        recipe = Recipe(
+            author=command.author,
+            title=command.title,
+            description=command.description,
+            components=components,
+            oid=command.recipe_id,
         )
+        if await self.user_repository.check_is_author_of_recipe(command.author, recipe):
+            await self.recipe_repository.update_one(recipe)
+        else:
+            raise UserCannotUpdateRecipe(403, "User can not edit this recipe")

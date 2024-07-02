@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -15,6 +17,7 @@ class Settings(BaseSettings):
     mongo_component_collection: str = Field(
         default="components", alias="MONGO_COMP_COLL"
     )
+    MODE: Literal["DEV", "PROD"] = Field(default="PROD")
     mongo_recipe_collection: str = Field(default="recipies", alias="MONGO_REC_COLL")
     mongo_users_collection: str = Field(default="users", alias="MONGO_USERS_COLL")
     mongo_db_name: str = Field(default="dish", alias="MONGO_DB_NAME")

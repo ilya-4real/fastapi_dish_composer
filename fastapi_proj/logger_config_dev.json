@@ -22,14 +22,6 @@
             "level": "DEBUG",
             "formatter": "uviformatter",
             "stream": "ext://sys.stderr"
-        },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "level": "WARNING",
-            "formatter": "simple",
-            "filename": "logs/my_app.log",
-            "maxBytes": 10000000,
-            "backupCount": 5
         }
     },
     "loggers": {

@@ -5,7 +5,7 @@ class RecipeLikeSchema(BaseModel):
     author_id: str
 
 
-class QueryRecipeSchema(BaseModel):
+class RecipeResponceSchema(BaseModel):
     model_config = ConfigDict(extra="ignore")
     oid: str
     author: str
@@ -20,8 +20,8 @@ class SearchRecipeSchema(BaseModel):
     title: str
 
 
-class QueryRecipesSchema(BaseModel):
-    recipes: list[QueryRecipeSchema]
+class RecipesResponceSchema(BaseModel):
+    recipes: list[RecipeResponceSchema]
 
 
 class SearchRecipesSchema(BaseModel):

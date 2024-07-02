@@ -30,12 +30,10 @@ from fastapi_proj.logic.comands.recipe import (
     CreateRecipeHandler,
     GenerateRandomRecipeCommand,
     GenerateRandomRecipeHandler,
-    GetPopularRecipesCommand,
-    GetPopularRecipesHandler,
-    GetRecipeByIdCommand,
-    GetRecipeByIdHandler,
     LikeRecipeCommand,
     LikeRecipeHandler,
+    UpdateRecipeCommand,
+    UpdateRecipeHandler,
 )
 from fastapi_proj.logic.comands.users import (
     GetOrCreateUserCommand,
@@ -48,7 +46,14 @@ from fastapi_proj.logic.queries.components import (
     QueryComponentById,
     QueryComponentHandler,
 )
-from fastapi_proj.logic.queries.recipes import SearchQuery, SearchQueryHandler
+from fastapi_proj.logic.queries.recipes import (
+    GetPopularRecipesHandler,
+    GetPopularRecipesQuery,
+    GetRecipeByIdHandler,
+    GetRecipeByIdQuery,
+    SearchQuery,
+    SearchQueryHandler,
+)
 from fastapi_proj.logic.queries.users import (
     GetUserCreatedRecipesHandler,
     GetUserCreatedRecipesQuery,
@@ -159,16 +164,6 @@ def _init_container() -> Container:
         )
 
         mediator.register_command(
-            GetRecipeByIdCommand,
-            [
-                GetRecipeByIdHandler(
-                    container.resolve(BaseUserRepository),  # type: ignore
-                    container.resolve(BaseRecipeRepository),  # type: ignore
-                )
-            ],
-        )
-
-        mediator.register_command(
             LikeRecipeCommand,
             [
                 LikeRecipeHandler(
@@ -179,14 +174,17 @@ def _init_container() -> Container:
         )
 
         mediator.register_command(
-            GetPopularRecipesCommand,
-            [
-                GetPopularRecipesHandler(container.resolve(BaseRecipeRepository))  # type: ignore
-            ],
-        )
-        mediator.register_command(
             GenerateRandomRecipeCommand,
             [GenerateRandomRecipeHandler(container.resolve(BaseComponentRepository))],  # type: ignore
+        )
+        mediator.register_command(
+            UpdateRecipeCommand,
+            [
+                UpdateRecipeHandler(
+                    container.resolve(BaseUserRepository),  # type: ignore
+                    container.resolve(BaseRecipeRepository),  # type: ignore
+                )
+            ],
         )
         return mediator
 
@@ -218,6 +216,18 @@ def _init_container() -> Container:
         query_mediator.register_handler(
             GetUserLikedRecipesQuery,
             GetUserLikedRecipesHandler(container.resolve(BaseUserRepository)),  # type: ignore
+        )
+        query_mediator.register_handler(
+            GetPopularRecipesQuery,
+            GetPopularRecipesHandler(container.resolve(BaseRecipeRepository)),  # type: ignore
+        )
+
+        query_mediator.register_handler(
+            GetRecipeByIdQuery,
+            GetRecipeByIdHandler(
+                container.resolve(BaseUserRepository),  # type: ignore
+                container.resolve(BaseRecipeRepository),  # type: ignore
+            ),
         )
         return query_mediator
 

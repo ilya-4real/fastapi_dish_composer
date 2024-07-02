@@ -9,10 +9,14 @@ from fastapi_proj.application.dependencies import (
     get_user,
 )
 from fastapi_proj.application.recipies.schemas import (
-    QueryRecipesSchema,
+    RecipesResponceSchema,
     SearchRecipesSchema,
 )
-from fastapi_proj.application.schemas import CreateRecipeSchema, RecipeResponceSchema
+from fastapi_proj.application.schemas import (
+    CreateRecipeSchema,
+    RecipeResponceSchema,
+    UpdateRecipeSchema,
+)
 from fastapi_proj.domain.enteties.component import (
     Component,
     ComponentCategory,
@@ -23,12 +27,15 @@ from fastapi_proj.domain.values.components import CommonTitle, IngredientAmount
 from fastapi_proj.logic.comands.recipe import (
     CreateRecipeCommand,
     GenerateRandomRecipeCommand,
-    GetPopularRecipesCommand,
-    GetRecipeByIdCommand,
     LikeRecipeCommand,
+    UpdateRecipeCommand,
 )
 from fastapi_proj.logic.mediator import Mediator
-from fastapi_proj.logic.queries.recipes import SearchQuery
+from fastapi_proj.logic.queries.recipes import (
+    GetPopularRecipesQuery,
+    GetRecipeByIdQuery,
+    SearchQuery,
+)
 from fastapi_proj.logic.querymediator import QueryMediator
 
 logger = getLogger(__name__)
@@ -61,13 +68,13 @@ async def create_recipe(
 
 @router.get("/popular")
 async def get_popular_recipes(
-    mediator: Annotated[Mediator, Depends(get_mediator)],
+    mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
     limit: int = 10,
     offset: int = 0,
 ):
-    command = GetPopularRecipesCommand(limit, offset)
-    result, *_ = await mediator.handle_command(command)
-    return QueryRecipesSchema.model_validate({"recipes": result})
+    command = GetPopularRecipesQuery(limit, offset)
+    result = await mediator.handle_query(command)
+    return RecipesResponceSchema.model_validate({"recipes": result})
 
 
 @router.get(
@@ -98,13 +105,31 @@ async def generate_random_recipe(
 async def get_recipe_detail(
     user: Annotated[User, Depends(get_user)],
     recipe_id: str,
-    mediator: Annotated[Mediator, Depends(get_mediator)],
+    mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
 ):
-    command = GetRecipeByIdCommand(user.username, recipe_id)
-    result, *_ = await mediator.handle_command(command)
+    command = GetRecipeByIdQuery(user.username, recipe_id)
+    result = await mediator.handle_query(command)
     if not result:
         return Response(None, 404)
     return RecipeResponceSchema.model_validate(result)
+
+
+@router.put("/{recipe_id}")
+async def update_recipe(
+    recipe_id: str,
+    author: Annotated[User, Depends(get_user)],
+    new_recipe: UpdateRecipeSchema,
+    mediator: Annotated[Mediator, Depends(get_mediator)],
+):
+    command = UpdateRecipeCommand(
+        author.username,
+        recipe_id,
+        new_recipe.title,
+        new_recipe.description,
+        new_recipe.model_dump()["components"],
+    )
+
+    result, *_ = await mediator.handle_command(command)
 
 
 @router.post("/{recipe_id}/like")
