@@ -2,6 +2,7 @@ from logging import getLogger
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Response
+from fastapi.responses import JSONResponse
 
 from fastapi_proj.application.dependencies import (
     get_mediator,
@@ -14,6 +15,7 @@ from fastapi_proj.application.recipies.schemas import (
 )
 from fastapi_proj.application.schemas import (
     CreateRecipeSchema,
+    ExceptionSchema,
     RecipeResponceSchema,
     UpdateRecipeSchema,
 )
@@ -66,7 +68,7 @@ async def create_recipe(
     await mediator.handle_command(command)
 
 
-@router.get("/popular")
+@router.get("/popular", response_model=RecipesResponceSchema)
 async def get_popular_recipes(
     mediator: Annotated[QueryMediator, Depends(get_query_mediator)],
     limit: int = 10,
@@ -89,7 +91,7 @@ async def search_for_recipe(
     return SearchRecipesSchema.model_validate({"recipes": result})
 
 
-@router.get("/random")
+@router.get("/random", response_model=RecipeResponceSchema)
 async def generate_random_recipe(
     mediator: Annotated[Mediator, Depends(get_mediator)],
 ):
@@ -114,7 +116,14 @@ async def get_recipe_detail(
     return RecipeResponceSchema.model_validate(result)
 
 
-@router.put("/{recipe_id}")
+@router.put(
+    "/{recipe_id}",
+    responses={
+        200: {"model": None},
+        401: {"model": ExceptionSchema},
+        403: {"model": ExceptionSchema},
+    },
+)
 async def update_recipe(
     recipe_id: str,
     author: Annotated[User, Depends(get_user)],
@@ -130,6 +139,7 @@ async def update_recipe(
     )
 
     result, *_ = await mediator.handle_command(command)
+    return JSONResponse(None, 200)
 
 
 @router.post("/{recipe_id}/like")

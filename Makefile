@@ -14,6 +14,6 @@ storages-down:
 
 .PHONY: app-dev
 app-dev: 
-	uvicorn fastapi_proj.application.main:app --reload
+	uvicorn --factory fastapi_proj.application.main:get_app --reload
 
 

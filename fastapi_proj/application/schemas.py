@@ -1,6 +1,10 @@
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class ExceptionSchema(BaseModel):
+    detail: str
+
+
 class Ingredient(BaseModel):
     title: str
     amount: int = Field(gt=1)

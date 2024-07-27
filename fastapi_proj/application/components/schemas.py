@@ -9,7 +9,7 @@ class Ingredient(BaseModel):
 
 
 class CreateComponentShema(BaseModel):
-    title: str = Field(min_length=2, max_length=100)
+    title: str = Field(min_length=2, max_length=120)
     component_category: ComponentCategory
     ingredients: list[Ingredient]
 
