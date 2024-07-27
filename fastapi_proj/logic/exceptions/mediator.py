@@ -11,7 +11,7 @@ class EventHandlerNotRegisteredError(LogicException):
 
     @property
     def message(self) -> str:
-        return f"event of type {self.event_type} doesnt have any handler"
+        return f"event of type {self.event_type} doesn't have any handler"
 
 
 @dataclass
@@ -20,4 +20,4 @@ class CommandHandlerNotRegisteredError(LogicException):
 
     @property
     def message(self):
-        return f"command of type{self.command_type} doesnt have any handler"
+        return f"command of type{self.command_type} doesn't have any handler"

@@ -23,29 +23,31 @@ async def lifespan(app: FastAPI):
     queue_handler.listener.stop()  # type: ignore
 
 
-app = FastAPI(
-    debug=False,
-    title="Dish builder",
-    description="API that provides info about different dishes and their composition",
-    lifespan=lifespan,
-)
-
-logger.debug(settings.CORS_ORIGINS)
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+async def handle_application_exception(
+    request: Request, exc: ApplicationException
+) -> JSONResponse:
+    return JSONResponse(content={"detail": exc.message}, status_code=exc.status_code)
 
 
-@app.exception_handler(ApplicationException)
-async def handle_application_exception(request: Request, exc: ApplicationException):
-    return JSONResponse(content={"error": exc.message}, status_code=exc.status_code)
+def get_app() -> FastAPI:
+    app = FastAPI(
+        debug=False,
+        title="Dish builder",
+        description="API that provides info about \
+              different dishes and their composition",
+        lifespan=lifespan,
+    )
 
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    app.include_router(component_router)
+    app.include_router(recipe_router)
+    app.include_router(users_router)
+    app.add_exception_handler(ApplicationException, handle_application_exception)  # type: ignore
 
-app.include_router(component_router)
-app.include_router(recipe_router)
-app.include_router(users_router)
+    return app
