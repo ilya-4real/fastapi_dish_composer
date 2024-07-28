@@ -3,10 +3,10 @@ ready to go API for storing, creating, and generating random recipes.
 
 ## Navigation
 - [Used tech](#used-tech)
-- [Architecture and patterns](acchitecture-and-patterns)
-- [TODO](#section1)
-- [Start project for dev purposes](#section1)
-- [Run project in production environment](#section1)
+- [Architecture and patterns](#architecture-and-patterns)
+- [TODO](#todo)
+- [Start project for dev purposes](#start-project-for-dev-purposes)
+- [Run project in production environment](#run-project-in-production-environment)
 
 
 
