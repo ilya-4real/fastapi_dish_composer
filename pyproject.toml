@@ -9,7 +9,6 @@ readme = "README.md"
 python = "^3.12"
 fastapi = "^0.108.0"
 uvicorn = "^0.25.0"
-pytest = "^7.4.4"
 motor = "^3.3.2"
 python-dotenv = "^1.0.0"
 gunicorn = "22.0.0"
@@ -22,10 +21,17 @@ pydantic-settings = "^2.2.1"
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.7.1"
 ruff = "^0.4.7"
+pytest = "^8.3.2"
+pytest-asyncio = "^0.23.8"
+polyfactory = "^2.16.2"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode="auto"
+testpaths = ["tests"]
 
 
 [tool.ruff]
