@@ -26,6 +26,6 @@ class Mediator:
         handlers = self.commands_map.get(command_type)
 
         if not handlers:
-            raise CommandHandlerNotRegisteredError(500, command_type)
+            raise CommandHandlerNotRegisteredError(500, "not found", command_type)
 
         return [await handler.handle(command) for handler in handlers]
