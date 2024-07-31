@@ -31,4 +31,4 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend
             sudo docker stop recipe_backend && sudo docker rm recipe_backend
-            sudo docker run --name recipe_backend -p 7000:8000 --network mongonet -d -e MONGO_PORT=${{secrets.MONGO_PORT}} -e MONGO_HOST=${{ secrets.MONGO_HOST }} -e MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -e CORS_ORIGINS=${{ secrets.CORS_ORIGINS }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend
+            sudo docker run --name recipe_backend -p 7000:8000 --network mongonet -d -e MONGO_PORT=${{secrets.MONGO_PORT}} -e MONGO_HOST=${{ secrets.MONGO_HOST }} -e MONGO_USERNAME=${{ secrets.MONGO_USERNAME }} -e MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }} -e REDIS_HOST={{secrets.REDIS_HOST}} -e REDIS_PORT={{secrets.REDIS_PORT}} -e CORS_ORIGINS=${{ secrets.CORS_ORIGINS }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:backend

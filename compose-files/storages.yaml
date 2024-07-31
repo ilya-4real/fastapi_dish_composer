@@ -10,6 +10,13 @@ services:
     networks:
       - mongonet
 
+  caches:
+    image: redis:7.4.0-bookworm
+    networks:
+      - mongonet
+    ports:
+      - 6379:6379
+
 networks:
   mongonet:
     driver: bridge

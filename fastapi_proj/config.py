@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     MONGO_PASSWORD: str
     MONGO_PORT: int
     MONGO_HOST: str
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_USERNAME: str | None = None
+    REDIS_PASSWORD: str | None = None
     CORS_ORIGINS: list[str]
     mongo_component_collection: str = Field(
         default="components", alias="MONGO_COMP_COLL"
