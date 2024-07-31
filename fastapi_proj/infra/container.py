@@ -5,6 +5,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from punq import Container, Scope
 
 from fastapi_proj.config import settings
+from fastapi_proj.infra.cache.basestorages import BaseCacheStorage
+from fastapi_proj.infra.cache.redisstorage import RedisCacheStorage
 from fastapi_proj.infra.repositories.recipies.base import (
     BaseComponentRepository,
     BaseRecipeRepository,
@@ -95,6 +97,17 @@ def _init_container() -> Container:
             mongo_client, settings.mongo_db_name, settings.mongo_users_collection
         )
 
+    def init_redis_cache_storage() -> RedisCacheStorage:
+        return RedisCacheStorage(
+            settings.REDIS_HOST,
+            settings.REDIS_PORT,
+            settings.REDIS_USERNAME,
+            settings.REDIS_PASSWORD,
+        )
+
+    container.register(
+        BaseCacheStorage, init_redis_cache_storage, scope=Scope.singleton
+    )
     container.register(
         BaseComponentRepository,
         factory=init_mongo_component_rep,
@@ -219,7 +232,10 @@ def _init_container() -> Container:
         )
         query_mediator.register_handler(
             GetPopularRecipesQuery,
-            GetPopularRecipesHandler(container.resolve(BaseRecipeRepository)),  # type: ignore
+            GetPopularRecipesHandler(
+                container.resolve(BaseRecipeRepository),  # type: ignore
+                container.resolve(BaseCacheStorage),  # type: ignore
+            ),
         )
 
         query_mediator.register_handler(
@@ -235,4 +251,5 @@ def _init_container() -> Container:
     container.register(
         QueryMediator, factory=init_query_mediator, scope=Scope.singleton
     )
+
     return container

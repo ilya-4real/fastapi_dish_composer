@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from fastapi_proj.infra.cache.basestorages import BaseCacheStorage
 from fastapi_proj.infra.repositories.recipies.base import BaseRecipeRepository
 from fastapi_proj.infra.repositories.users.base import BaseUserRepository
 from fastapi_proj.logic.queries.base import BaseQuery, BaseQueryHandler
@@ -27,11 +28,18 @@ class GetPopularRecipesQuery(BaseQuery):
 @dataclass
 class GetPopularRecipesHandler(BaseQueryHandler[GetPopularRecipesQuery, list]):
     recipe_repository: BaseRecipeRepository
+    cache_storage: BaseCacheStorage
 
     async def handle(self, command: GetPopularRecipesQuery) -> list:
-        return await self.recipe_repository.get_popular_recipes(
-            command.limit, command.offset
-        )
+        cache_key = f"/recipes/popular?limit={command.limit}&offset={command.offset}"
+        cached = await self.cache_storage.get_by_key(cache_key)
+        if not cached:
+            recipes = await self.recipe_repository.get_popular_recipes(
+                command.limit, command.offset
+            )
+            await self.cache_storage.set_key(cache_key, recipes, 120)
+            return recipes
+        return cached
 
 
 @dataclass(frozen=True)
