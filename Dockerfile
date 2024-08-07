@@ -22,4 +22,4 @@ RUN apt update -y && \
 
 COPY . /fastapi_proj/
 
-CMD gunicorn "fastapi_proj.application.main:get_app()" --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+CMD gunicorn "fastapi_proj.application.main:get_app()" --workers 5 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
