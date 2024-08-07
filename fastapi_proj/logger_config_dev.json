@@ -26,11 +26,11 @@
     },
     "loggers": {
 	    "root": {
-		    "level": "DEBUG", 
+		    "level": "WARNING", 
 		    "handlers": ["queue_handler"]
 		},
 	    "uvicorn": {
-		    "level": "DEBUG", 
+		    "level": "WARNING", 
 		    "handlers": ["queue_handler"]
 		}
 	}

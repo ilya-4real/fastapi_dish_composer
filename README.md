@@ -82,6 +82,7 @@ docker run --name backend \
 -p 8000:8000 --network mongonet \
 -e MONGO_PORT=27017 -e MONGO_HOST=localhost \
 -e MONGO_USERNAME=admin -e MONGO_PASSWORD=superpassword  -d \
+-e REDIS_HOST=localhost -e REDIS_PORT=6379 \
 -e CORS_ORIGINS='["www.example.com"]' ilya4r/recipe-builder:backend
 ~~~
 

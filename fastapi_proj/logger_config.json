@@ -19,7 +19,7 @@
         },
         "stdout": {
             "class": "logging.StreamHandler",
-            "level": "DEBUG",
+            "level": "WARNING",
             "formatter": "uviformatter",
             "stream": "ext://sys.stderr"
         },
@@ -34,11 +34,11 @@
     },
     "loggers": {
 	    "root": {
-		    "level": "DEBUG", 
+		    "level": "WARNING", 
 		    "handlers": ["queue_handler"]
 		},
 	    "uvicorn": {
-		    "level": "DEBUG", 
+		    "level": "WARNING", 
 		    "handlers": ["queue_handler"]
 		}
 	}
